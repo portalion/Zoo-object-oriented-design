@@ -1,0 +1,50 @@
+The Byteot ZOO was founded in 0x7CF by King Byteasar 0xD the Wise. In the ZOO
+we have *enclosures* that have a name (string), a list of *animals*
+inhabiting them and an *employee* responsible for a given *enclosure*. Each
+animal has a name (string), age (positive int) and *species*. Each *species*
+consists of a *name* and, in the case of carnivorous species, a list of
+favorite foods (species). Each employee has a first name (string), last name
+(string), age (positive int), and a list of *enclosures* they look after. In
+addition, in order to better adjust the offer, the zoo registers visitors.
+For each visitor, his name (string), last name (string) and the list of
+*enclosures* that he visited are saved.
+
+Possible representations:
+	0 - Base representation. Objects with references - references are used for connections between objects.
+		Enclosure
+			- name (string)
+			- animals (list of animals refs)
+			- employee (employee ref)
+			
+		Animal
+			- name (string)
+			- age (int)
+			- species (species ref)
+			
+		Species
+			- name (string)
+			- favouriteFoods (list of species refs) (only for carnivorous)
+		
+		Employee
+			- name (string)
+			- surname (string)
+			- age (int)
+			- enclosures (list of enclosures refs)
+
+		Visitor 
+			- name (string)
+			- surname (string)
+			- visitedEnclosures (list of enclosures refs)
+			
+	2. Text - all objects are represented as single string containing all the data in format specified below.
+	References to objects are handled like 1.
+		Enclosure - "<name>@<employee name> <employee surname>,<animal name>,..."
+		Animal - "<name>(<age>)%<species name>"
+		Species - "<name>$<favouriteFoods name>,..."
+		Employee - "<name> <surname>(<age>)@<enclosure name>,..."
+		Visitor - "<name> <surname>@<enclosure name>,..."
+		
+		Notation used:
+			<-> - value ( - is a name of field)
+			[-] - optional ( - is a name of field)
+			-,... - possible repetitions ( - is a string of tokens that can logically repeat)
