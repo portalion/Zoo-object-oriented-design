@@ -123,3 +123,74 @@ namespace UserRepresentation
         }
     }
 }
+
+
+namespace DatabaseRepresentation
+{
+    public class Enclosure
+    {
+        public string data {get; private set; }
+
+        public Enclosure(string data)
+        {
+            this.data = data;
+        }
+
+        public override string ToString() 
+        {
+            return data;
+        }
+    }
+
+    public class Animal
+    {
+        public string data { get; private set; }
+
+        public Animal(string data)
+        { 
+            this.data = data; 
+        }
+        public override string ToString()
+        {
+            return data;
+        }
+    }
+
+    public class Species
+    {
+        public string data { get; private set; }
+        public Species(string data) 
+        {
+            this.data = data;
+        }
+        public override string ToString()
+        {
+            return data;
+        }
+    }
+
+    public class Employee
+    {
+        public string data { get; private set; }
+        public Employee(string data)
+        {
+            this.data = data;
+        }
+        public override string ToString()
+        {
+            return data;
+        }
+    }
+    public class Visitor
+    {
+        public string data { get; private set; }
+        public Visitor(string data)
+        {
+            this.data = data;
+        }
+        public override string ToString()
+        {
+            return data;
+        }
+    }
+}
