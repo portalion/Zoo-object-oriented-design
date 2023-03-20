@@ -9,13 +9,13 @@ namespace UserRepresentation
     public class Enclosure
     {
         public string name { get; set; }
-        public List<Animal> animals { get; private set; }
+        public List<Species> animals { get; private set; }
         public Employee employee { get; private set; }
 
-        public Enclosure(string name, Animal[]? animals, Employee employee)
+        public Enclosure(string name, Species[]? animals, Employee employee)
         {
             this.name = name;
-            this.animals = new List<Animal>();
+            this.animals = new List<Species>();
             this.employee = employee;
 
             if (animals == null) return;
