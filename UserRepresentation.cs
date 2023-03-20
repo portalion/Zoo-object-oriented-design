@@ -26,9 +26,8 @@ namespace UserRepresentation
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder(100);
-            
-            foreach(var animal in animals)
-                sb.Append(animal.name);
+
+            sb.AppendJoin(", ", animals.Select(animal => animal.name));
             return $"{name}, [{sb}], {employee.name} {employee.surname}";
         }
     }
@@ -67,8 +66,7 @@ namespace UserRepresentation
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder(100);
-            foreach (var food in favouriteFoods)
-                sb.Append(food.name);
+            sb.AppendJoin(", ", favouriteFoods.Select(elem => elem.name));
             return $"{name}, [{sb}]";
         }
     }
@@ -94,10 +92,8 @@ namespace UserRepresentation
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder(100);
-            foreach (var enclosure in enclosures)
-                sb.Append(enclosure.name);
-
+            StringBuilder sb = new StringBuilder(20 * enclosures.Count);
+            sb.AppendJoin(", ", enclosures.Select(elem => elem.name));
             return $"{name}, {surname}, {age}, [{sb}]";
         }
     }
@@ -120,10 +116,8 @@ namespace UserRepresentation
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder(100);
-            foreach (var enclosure in visitedEnclosures)
-                sb.Append(enclosure.name);
-
+            StringBuilder sb = new StringBuilder(20 * visitedEnclosures.Count);
+            sb.AppendJoin(", ", visitedEnclosures.Select(elem => elem.name));
             return $"{name} {surname}, [{sb}]";
         
         }
