@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace UserRepresentation
 {
-    public class Enclosure
+    public class Enclosure : IEnclosure
     {
         public string name { get; set; }
         public List<Species> animals { get; private set; }
@@ -30,9 +30,13 @@ namespace UserRepresentation
             sb.AppendJoin(", ", animals.Select(animal => animal.name));
             return $"{name}, [{sb}], {employee.name} {employee.surname}";
         }
-    }
 
-    public class Animal
+        public void print()
+        {
+            Console.WriteLine(ToString());
+        }
+    }
+    public class Animal : IAnimal
     {
         public string name { get; private set; }
         public int age { get; private set; }
@@ -48,8 +52,12 @@ namespace UserRepresentation
         {
             return $"{name}, {age}, {species.name}";
         }
+        public void print()
+        {
+            Console.WriteLine(ToString());
+        }
     }
-    public class Species
+    public class Species : ISpecies
     {
         public string name { get; private set; }
         public List<Species> favouriteFoods { get; private set; }
@@ -69,9 +77,12 @@ namespace UserRepresentation
             sb.AppendJoin(", ", favouriteFoods.Select(elem => elem.name));
             return $"{name}, [{sb}]";
         }
+        public void print()
+        {
+            Console.WriteLine(ToString());
+        }
     }
-
-    public class Employee
+    public class Employee : IEmployee
     {
         public string name { get; private set; }
         public string surname { get; private set;}
@@ -96,9 +107,12 @@ namespace UserRepresentation
             sb.AppendJoin(", ", enclosures.Select(elem => elem.name));
             return $"{name}, {surname}, {age}, [{sb}]";
         }
+        public void print()
+        {
+            Console.WriteLine(ToString());
+        }
     }
-
-    public class Visitor
+    public class Visitor : IVisitor
     {
         public string name { get; private set; }
         public string surname { get; private set; }
@@ -121,7 +135,34 @@ namespace UserRepresentation
             return $"{name} {surname}, [{sb}]";
         
         }
+
+        public void print()
+        {
+            Console.WriteLine(ToString());
+        }
     }
+
+    public interface IEnclosure 
+    {
+        public void print();
+    }
+    public interface IAnimal
+    {
+        public void print();
+    }
+    public interface IEmployee
+    {
+        public void print();
+    }
+    public interface ISpecies
+    {
+        public void print();
+    }
+    public interface IVisitor
+    {
+        public void print();
+    }
+ 
 }
 
 
@@ -141,7 +182,6 @@ namespace DatabaseRepresentation
             return data;
         }
     }
-
     public class Animal
     {
         public string data { get; private set; }
@@ -155,7 +195,6 @@ namespace DatabaseRepresentation
             return data;
         }
     }
-
     public class Species
     {
         public string data { get; private set; }
@@ -168,7 +207,6 @@ namespace DatabaseRepresentation
             return data;
         }
     }
-
     public class Employee
     {
         public string data { get; private set; }
@@ -191,6 +229,127 @@ namespace DatabaseRepresentation
         public override string ToString()
         {
             return data;
+        }
+    }
+}
+
+namespace DatabaseToUserAdapter
+{
+    using UR = UserRepresentation;
+    using DatabaseRepresentation;
+
+    public class EnclosureAdapter : UR.IEnclosure
+    {
+        Enclosure adaptee;
+
+        public EnclosureAdapter(Enclosure adaptee)
+        {
+            this.adaptee = adaptee;
+        }
+
+        public void print()
+        {
+            string name = adaptee.data.Split('@')[0];
+            string employee = adaptee.data.Split('@')[1].Split(',')[0];
+            int countOfAnimals = adaptee.data.Split('@')[1].Split(',').Length - 1;
+            string[] animals = new string[countOfAnimals];
+            for(int i = 0; i < countOfAnimals; i++) animals[i] = adaptee.data.Split('@')[1].Split(',')[i + 1];
+
+            StringBuilder sb = new StringBuilder();
+            sb.Append($"{name}, [");
+            sb.AppendJoin(", ", animals);
+            sb.Append($"], {employee}");
+            Console.WriteLine(sb);
+        }
+    }
+
+    public class AnimalAdapter : UR.IAnimal
+    {
+        Animal adaptee;
+
+        public AnimalAdapter(Animal adaptee)
+        {
+            this.adaptee = adaptee;
+        }
+
+        public void print()
+        {
+            string name = adaptee.data.Split('(')[0];
+            string age = adaptee.data.Split('(')[1].Split(')')[0];
+            string species = adaptee.data.Split('%')[1];
+            Console.WriteLine($"{name}, {age}, {species}");
+        }
+    }
+
+    public class SpeciesAdapter : UR.ISpecies
+    {
+        Species adaptee;
+
+        public SpeciesAdapter(Species adaptee)
+        {
+            this.adaptee = adaptee;
+        }
+
+        public void print()
+        {
+            string name = adaptee.data.Split('$')[0];
+            string[] foods = adaptee.data.Split('$')[1].Split(',');
+
+            StringBuilder sb = new StringBuilder();
+            sb.Append($"{name}, [");
+            sb.AppendJoin(", ", foods);
+            sb.Append("]");
+
+            Console.WriteLine(sb);
+        }
+    }
+
+    public class EmployeeAdapter : UR.IEmployee
+    {
+        Employee adaptee;
+
+        public EmployeeAdapter(Employee adaptee)
+        {
+            this.adaptee = adaptee;
+        }
+
+        public void print()
+        {
+            string name = adaptee.data.Split(' ')[0];
+            string surname = adaptee.data.Split(' ')[1].Split('(')[0];
+            string age = adaptee.data.Split('(')[1].Split(')')[0];
+            string[] enclosures = adaptee.data.Split('@')[1].Split(",");
+
+            StringBuilder sb = new StringBuilder();
+            sb.Append($"{name}, {surname}, {age}, [");
+            sb.AppendJoin(", ", enclosures);
+            sb.Append("]");
+
+            Console.WriteLine(sb);
+        }
+    }
+
+    public class VisitorAdapter : UR.IVisitor
+    {
+        Visitor adaptee;
+
+        public VisitorAdapter(Visitor adaptee)
+        {
+            this.adaptee = adaptee;
+        }
+
+        public void print()
+        {
+            string name = adaptee.data.Split(' ')[0];
+            string surname = adaptee.data.Split(' ')[1].Split('@')[0];
+            string[] enclosures = adaptee.data.Split('@')[1].Split(",");
+
+            StringBuilder sb = new StringBuilder();
+            sb.Append($"{name} {surname}, [");
+            sb.AppendJoin(", ", enclosures);
+            sb.Append("]");
+
+            Console.WriteLine(sb);
         }
     }
 }

@@ -184,6 +184,25 @@ namespace Zoo
             Console.WriteLine();
             foreach(var print in DatabaseRepresentationVisitor) Console.WriteLine(print);
 
+            Console.WriteLine();
+            Console.WriteLine("Adapters");
+            Console.WriteLine();
+
+            foreach (var print in DatabaseRepresentationEnclosures)
+                new DatabaseToUserAdapter.EnclosureAdapter(print).print();
+            Console.WriteLine();
+            foreach (var print in DatabaseRepresentationAnimal)
+                new DatabaseToUserAdapter.AnimalAdapter(print).print();
+            Console.WriteLine();
+            foreach (var print in DatabaseRepresentationSpecies)
+                new DatabaseToUserAdapter.SpeciesAdapter(print).print();
+            Console.WriteLine();
+            foreach (var print in DatabaseRepresentationEmployee)
+                new DatabaseToUserAdapter.EmployeeAdapter(print).print();
+
+            Console.WriteLine();
+            foreach (var print in DatabaseRepresentationVisitor)
+                new DatabaseToUserAdapter.VisitorAdapter(print).print();
         }
     }
 }
