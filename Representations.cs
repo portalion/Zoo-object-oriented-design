@@ -5,33 +5,33 @@ namespace Zoo
 {
     public interface IEnclosure
     {
-        string GetName();
-        IEnumerable<ISpecies> GetAnimals();
-        IEmployee GetEmployee();
+        string name { get; }
+        IEnumerable<ISpecies> animals { get; }
+        IEmployee employee { get; }
     }
     public interface IAnimal
     {
-        string GetName();
-        int GetAge();
-        ISpecies GetSpecies();
+        string name { get; }
+        int age { get; }
+        ISpecies species { get; }
     }
     public interface IEmployee
     { 
-        string GetName();
-        string GetSurname();
-        int GetAge();
-        IEnumerable<IEnclosure> GetEnclosureList();
+        string name { get; }
+        string surname { get; }
+        int age { get; }
+        IEnumerable<IEnclosure> enclosures { get; }
     }
     public interface ISpecies
     {
-        string GetName();
-        IEnumerable<ISpecies> GetFavouriteFoods();
+        string name { get; }
+        IEnumerable<ISpecies> favouriteFoods { get; }
     }
     public interface IVisitor
     {
-        string GetName();
-        string GetSurname();
-        IEnumerable<IEnclosure> GetVisitedEnclosures();
+        string name { get; }
+        string surname { get; }
+        IEnumerable<IEnclosure> visitedEnclosures { get; }
     }
 }
 
@@ -100,81 +100,4 @@ namespace MainRepresentation
         }
     }
 
-    public class EnclosureAdapter : Zoo.IEnclosure
-    {
-        Enclosure adaptee;
-        public EnclosureAdapter(Enclosure adaptee)
-        {
-            this.adaptee = adaptee;
-        }
-        public string GetName()
-        {
-            return adaptee.name;
-        }
-        public IEmployee GetEmployee()
-        {
-            throw new NotImplementedException();
-        }
-        public IEnumerable<ISpecies> GetAnimals()
-        {
-            foreach (var specie in adaptee.animals)
-                yield return new SpeciesAdapter(specie);
-        }
-    }
-
-    public class AnimalAdapter : Zoo.IAnimal
-    {
-        Animal adaptee;
-        public AnimalAdapter(Animal adaptee)
-        {
-            this.adaptee = adaptee;
-        }
-
-        public string GetName()
-        {
-            return adaptee.name;
-        }
-
-        public int GetAge()
-        {
-            return adaptee.age;
-        }
-
-        public ISpecies GetSpecies()
-        {
-            return new SpeciesAdapter(adaptee.species);
-        }
-    }
-
-    public class SpeciesAdapter : Zoo.ISpecies
-    {
-        Species adaptee;
-        public SpeciesAdapter(Species adaptee)
-        {
-            this.adaptee = adaptee;
-        }
-        public string GetName()
-        {
-            return adaptee.name;
-        }
-
-        public IEnumerable<ISpecies> GetFavouriteFoods()
-        {
-            foreach (var food in adaptee.favouriteFoods)
-                yield return new SpeciesAdapter(food);
-        }
-    }
-
-    public class EmployeeAdapter : IEmployee
-    {
-        Employee adaptee;
-        public EmployeeAdapter(Employee adaptee)
-        {
-            this.adaptee = adaptee;
-        }
-
-        public string GetName() { return adaptee.name; }
-        public string GetSurname() { return adaptee.surname;}
-        public int GetAge() { return adaptee.age;}
-    }
 }
