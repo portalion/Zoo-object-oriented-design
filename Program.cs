@@ -1,5 +1,4 @@
-﻿using System.Text;
-
+﻿
 namespace Zoo
 {
     class Zoo
@@ -52,9 +51,63 @@ namespace Zoo
             ["Ryker Polly"] = ("Ryker", "Polly", new string[] { "Break" })
         };
 
+        static void MainFormatOperations()
+        {
+            Dictionary<string, MainRepresentation.Enclosure> enclosures = new Dictionary<string, MainRepresentation.Enclosure>();
+            Dictionary<string, MainRepresentation.Animal> animals = new Dictionary<string, MainRepresentation.Animal>();
+            Dictionary<string, MainRepresentation.Species> species = new Dictionary<string, MainRepresentation.Species>();
+            Dictionary<string, MainRepresentation.Employee> employees = new Dictionary<string, MainRepresentation.Employee>();
+            Dictionary<string, MainRepresentation.Visitor> visitors = new Dictionary<string, MainRepresentation.Visitor>();
+
+            //Creating objects
+            foreach (var specie in SpeciesData)
+                species[specie.Key] = 
+                    new MainRepresentation.Species(specie.Value.name,
+                    new List<MainRepresentation.Species>());
+            
+            foreach (var animal in AnimalData)
+                animals[animal.Key] =
+                    new MainRepresentation.Animal(animal.Value.name,
+                    animal.Value.age, species[animal.Value.species]);
+
+            foreach (var employee in EmployeeData)
+                employees[employee.Key] =
+                    new MainRepresentation.Employee(employee.Value.name,
+                    employee.Value.surname, employee.Value.age,
+                    new List<MainRepresentation.Enclosure>());
+
+            foreach (var visitor in VisitorData)
+                visitors[visitor.Key] =
+                    new MainRepresentation.Visitor(visitor.Value.name,
+                    visitor.Value.surname, new List<MainRepresentation.Enclosure>());
+
+            foreach (var enclosure in EnclosureData)
+                enclosures[enclosure.Key] = 
+                    new MainRepresentation.Enclosure(enclosure.Value.name,
+                    new List<MainRepresentation.Species>(), 
+                    employees[enclosure.Value.employee]);
+            
+            // Appending lists
+            foreach (var enclosure in EnclosureData)
+                foreach (var animal in enclosure.Value.animals)
+                    enclosures[enclosure.Key].animals.Add(species[animal]);
+
+            foreach (var visitor in VisitorData)
+                foreach (var enclosure in visitor.Value.enclosures)
+                    visitors[visitor.Key].visitedEnclosures.Add(enclosures[enclosure]);
+
+            foreach (var specie in SpeciesData)
+                foreach (var food in specie.Value.foods)
+                    species[specie.Key].favouriteFoods.Add(species[food]);
+
+            foreach (var employee in EmployeeData)
+                foreach (var enclosure in employee.Value.enclosures)
+                    employees[employee.Key].enclosures.Add(enclosures[enclosure]);
+        }
+
         static void Main()
         {
-
+            MainFormatOperations();
         }
 
     }
