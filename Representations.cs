@@ -75,7 +75,7 @@ namespace MainRepresentation
     public class Employee
     {
         public string name { get; set; }
-        public string surname { get; set;}
+        public string surname { get; set; }
         public int age { get; set; }
         public List<Enclosure> enclosures { get; set; }
 
@@ -100,4 +100,57 @@ namespace MainRepresentation
         }
     }
 
+
+    public class EnclosureAdapter : IEnclosure
+    {
+        Enclosure adaptee;
+        public EnclosureAdapter(Enclosure adaptee) { this.adaptee = adaptee; }
+
+        public string name { get { return adaptee.name; } }
+        public IEmployee employee { get { throw new NotImplementedException(); } }
+        public IEnumerable<ISpecies> animals { get { throw new NotImplementedException(); } }
+    }
+
+    public class AnimalAdapter : IAnimal
+    {
+        Animal adaptee;
+        public AnimalAdapter(Animal adaptee) { this.adaptee = adaptee; }
+        public string name { get { return adaptee.name; } }
+        public int age { get { return adaptee.age; } }
+        public ISpecies species { get { throw new NotImplementedException(); } }
+    }
+
+    public class SpeciesAdapter : ISpecies
+    {
+        Species adaptee;
+        public SpeciesAdapter(Species adaptee) { this.adaptee = adaptee; }
+        public string name { get { return adaptee.name; } }
+        public IEnumerable<ISpecies> favouriteFoods 
+        { 
+            get
+            {
+                foreach (var species in adaptee.favouriteFoods)
+                    yield return new SpeciesAdapter(species);
+            } 
+        }
+    }
+
+    public class EmployeeAdapter : IEmployee
+    {
+        Employee adaptee;
+        public EmployeeAdapter(Employee adaptee) { this.adaptee = adaptee; }
+        public string name { get { return adaptee.name; } }
+        public string surname { get { return adaptee.surname;} }
+        public int age { get { return adaptee.age; } }
+        public IEnumerable<IEnclosure> enclosures { get { throw new NotImplementedException(); } }
+    }
+
+    public class VisitorAdapter : IVisitor
+    {
+        Visitor adaptee;
+        public VisitorAdapter(Visitor adaptee) { this.adaptee = adaptee; }
+        public string name { get { return adaptee.name; } }
+        public string surname { get { return adaptee.surname; } }
+        public IEnumerable<IEnclosure> visitedEnclosures { get { throw new NotImplementedException(); } }
+    }
 }
