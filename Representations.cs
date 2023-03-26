@@ -107,8 +107,15 @@ namespace MainRepresentation
         public EnclosureAdapter(Enclosure adaptee) { this.adaptee = adaptee; }
 
         public string name { get { return adaptee.name; } }
-        public IEmployee employee { get { throw new NotImplementedException(); } }
-        public IEnumerable<ISpecies> animals { get { throw new NotImplementedException(); } }
+        public IEmployee employee { get { return new EmployeeAdapter(adaptee.employee); } }
+        public IEnumerable<ISpecies> animals 
+        { 
+            get 
+            {
+                foreach (var specie in adaptee.animals)
+                    yield return new SpeciesAdapter(specie);
+            } 
+        }
     }
 
     public class AnimalAdapter : IAnimal
@@ -117,7 +124,7 @@ namespace MainRepresentation
         public AnimalAdapter(Animal adaptee) { this.adaptee = adaptee; }
         public string name { get { return adaptee.name; } }
         public int age { get { return adaptee.age; } }
-        public ISpecies species { get { throw new NotImplementedException(); } }
+        public ISpecies species { get { return new SpeciesAdapter(adaptee.species); } }
     }
 
     public class SpeciesAdapter : ISpecies
@@ -142,7 +149,14 @@ namespace MainRepresentation
         public string name { get { return adaptee.name; } }
         public string surname { get { return adaptee.surname;} }
         public int age { get { return adaptee.age; } }
-        public IEnumerable<IEnclosure> enclosures { get { throw new NotImplementedException(); } }
+        public IEnumerable<IEnclosure> enclosures 
+        { 
+            get 
+            {
+                foreach(var enclosure in adaptee.enclosures)
+                    yield return new EnclosureAdapter(enclosure);
+            } 
+        }
     }
 
     public class VisitorAdapter : IVisitor
@@ -151,6 +165,13 @@ namespace MainRepresentation
         public VisitorAdapter(Visitor adaptee) { this.adaptee = adaptee; }
         public string name { get { return adaptee.name; } }
         public string surname { get { return adaptee.surname; } }
-        public IEnumerable<IEnclosure> visitedEnclosures { get { throw new NotImplementedException(); } }
+        public IEnumerable<IEnclosure> visitedEnclosures 
+        { 
+            get 
+            {
+                foreach (var enclosure in adaptee.visitedEnclosures)
+                    yield return new EnclosureAdapter(enclosure);
+            } 
+        }
     }
 }
