@@ -1,4 +1,6 @@
-﻿
+﻿using MainRepresentation;
+using System.Text;
+
 namespace Zoo
 {
     class Zoo
@@ -50,6 +52,45 @@ namespace Zoo
             ["Basil Bailey"] = ("Basil", "Bailey", new string[] { "311", "Jurasic Park" }),
             ["Ryker Polly"] = ("Ryker", "Polly", new string[] { "Break" })
         };
+
+        static void PrintEnclosure(IEnclosure enclosure)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append($"{enclosure.name}, [");
+            sb.AppendJoin(", ", enclosure.animals.Select(animal => animal.name));
+            sb.Append($"], {enclosure.employee.name} {enclosure.employee.surname}");
+            Console.WriteLine(sb);
+        }
+        static void PrintAnimal(IAnimal animal) 
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append($"{animal.name}, {animal.age}, {animal.species.name}");
+            Console.WriteLine(sb);
+        }
+        static void PrintSpecies(ISpecies species) 
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append($"{species.name}, [");
+            sb.AppendJoin(", ", species.favouriteFoods.Select(specie => specie.name));
+            sb.Append($"]");
+            Console.WriteLine(sb);
+        }
+        static void PrintEmployee(IEmployee employee) 
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append($"{employee.name}, {employee.surname}, {employee.age}, [");
+            sb.AppendJoin(", ", employee.enclosures.Select(enclosure => enclosure.name));
+            sb.Append($"]");
+            Console.WriteLine(sb);
+        }
+        static void PrintVisitor(IVisitor visitor) 
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append($"{visitor.name}, {visitor.surname}, [");
+            sb.AppendJoin(", ", visitor.visitedEnclosures.Select(enclosure => enclosure.name));
+            sb.Append($"]");
+            Console.WriteLine(sb);
+        }
 
         static void MainFormatOperations()
         {
@@ -103,10 +144,32 @@ namespace Zoo
             foreach (var employee in EmployeeData)
                 foreach (var enclosure in employee.Value.enclosures)
                     employees[employee.Key].enclosures.Add(enclosures[enclosure]);
+
+            Console.WriteLine("Enclosures: ");
+            foreach (var enclosure in enclosures.Values)
+                PrintEnclosure(new MainRepresentation.EnclosureAdapter(enclosure));
+            Console.WriteLine();
+            Console.WriteLine("Animals: ");
+            foreach (var animal in animals.Values)
+                PrintAnimal(new MainRepresentation.AnimalAdapter(animal));
+            Console.WriteLine();
+            Console.WriteLine("Species: ");
+            foreach (var specie in species.Values) 
+                PrintSpecies(new MainRepresentation.SpeciesAdapter(specie));
+            Console.WriteLine();
+            Console.WriteLine("Employees: ");
+            foreach (var employee in employees.Values)
+                PrintEmployee(new MainRepresentation.EmployeeAdapter(employee));
+            Console.WriteLine();
+            Console.WriteLine("Visitors: ");
+            foreach (var visitor in visitors.Values)
+                PrintVisitor(new MainRepresentation.VisitorAdapter(visitor));
+            Console.WriteLine();
         }
 
         static void Main()
         {
+            Console.WriteLine("Main representation: ");
             MainFormatOperations();
         }
 
