@@ -107,7 +107,7 @@ namespace SecondRepresentation
     public class Enclosure
     {
         public string data;
-        Enclosure(string data)
+        public Enclosure(string data)
         {
             this.data = data;
         }
@@ -115,7 +115,7 @@ namespace SecondRepresentation
     public class Animal
     {
         public string data;
-        Animal(string data)
+        public Animal(string data)
         {
             this.data = data;
         }
@@ -123,7 +123,7 @@ namespace SecondRepresentation
     public class Species
     {
         public string data;
-        Species(string data)
+        public Species(string data)
         {
             this.data = data;   
         }
@@ -131,7 +131,7 @@ namespace SecondRepresentation
     public class Employee
     {
         public string data;
-        Employee(string data)
+        public Employee(string data)
         {
             this.data = data;
         }
@@ -139,7 +139,7 @@ namespace SecondRepresentation
     public class Visitor
     {
         public string data;
-        Visitor(string data)
+        public Visitor(string data)
         {
             this.data = data;
         }
