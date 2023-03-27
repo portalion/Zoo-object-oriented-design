@@ -145,3 +145,59 @@ namespace SecondRepresentation
         }
     }
 }
+
+namespace ThirdRepresentation
+{
+    public class Enclosure
+    {
+        int id;
+        Dictionary<string, string> data;
+        public Enclosure(int id, Dictionary<string, string> data)
+        {
+            this.id = id;
+            this.data = data;
+        }
+    }
+
+    public class Animal
+    {
+        int id;
+        Dictionary<string, string> data;
+        public Animal(int id, Dictionary<string, string> data)
+        {
+            this.id = id;
+            this.data = data;
+        }
+    }
+
+    public class Species
+    {
+        int id;
+        Dictionary<string, string> data;
+        public Species(int id, Dictionary<string, string> data)
+        {
+            this.id = id;
+            this.data = data;
+        }
+    }
+    public class Employee
+    {
+        int id;
+        Dictionary<string, string> data;
+        public Employee(int id, Dictionary<string, string> data)
+        {
+            this.id = id;
+            this.data = data;
+        }
+    }
+    public class Visitor
+    {
+        int id;
+        Dictionary<string, string> data;
+        public Visitor(int id, Dictionary<string, string> data)
+        {
+            this.id = id;
+            this.data = data;
+        }
+    }
+}
