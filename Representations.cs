@@ -158,7 +158,6 @@ namespace ThirdRepresentation
             this.data = data;
         }
     }
-
     public class Animal
     {
         public int id;
@@ -169,7 +168,6 @@ namespace ThirdRepresentation
             this.data = data;
         }
     }
-
     public class Species
     {
         public int id;
