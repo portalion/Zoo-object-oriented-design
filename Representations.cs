@@ -1,7 +1,4 @@
-﻿using System.Text;
-using Zoo;
-
-namespace Zoo
+﻿namespace Zoo
 {
     public interface IEnclosure
     {

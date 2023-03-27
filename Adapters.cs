@@ -105,7 +105,7 @@ namespace SecondRepresentation
         { 
             get 
             {
-                var names = adaptee.data.Split(',').Skip(2);
+                var names = adaptee.data.Split(',').Skip(1);
                 foreach (var specie in names)
                     if (species.ContainsKey(specie)) yield return new SpeciesAdapter(species[specie], species);
                     else throw new KeyNotFoundException();
