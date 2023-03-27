@@ -229,3 +229,151 @@ namespace SecondRepresentation
         }
     }
 }
+
+namespace ThirdRepresentation
+{
+    public class EnclosureAdapter : IEnclosure
+    {
+        Enclosure adaptee;
+        Dictionary<int, Species> species;
+        Dictionary<int, Employee> employees;
+        Dictionary<int, Enclosure> enclosures;
+        public EnclosureAdapter(Enclosure adaptee, Dictionary<int, Species> species,
+            Dictionary<int, Employee> employees, Dictionary<int, Enclosure> enclosures)
+        {
+            this.adaptee = adaptee;
+            this.species = species;
+            this.enclosures = enclosures;
+            this.employees = employees;
+        }
+
+        public string name { get { return adaptee.data["name"]; } }
+        public IEmployee employee
+        {
+            get
+            {
+                var id = int.Parse(adaptee.data["employee"]);
+                return new EmployeeAdapter(employees[id], species, employees, enclosures);
+            }
+        }
+        public IEnumerable<ISpecies> animals
+        {
+            get
+            {
+                int size = int.Parse(adaptee.data["animals.Size()"]);
+                for (int i = 0; i < size; i++)
+                    yield return new SpeciesAdapter(species[int.Parse(adaptee.data[$"animals[{i}]"])], species);
+            }
+        }
+
+    }
+    public class SpeciesAdapter : ISpecies
+    {
+        Species adaptee;
+        Dictionary<int, Species> species;
+        public SpeciesAdapter(Species adaptee, Dictionary<int, Species> species)
+        {
+            this.adaptee = adaptee;
+            this.species = species;
+        }
+
+        public string name
+        {
+            get
+            {
+                return adaptee.data["name"];
+            }
+        }
+
+        public IEnumerable<ISpecies> favouriteFoods
+        {
+            get
+            {
+                int size = int.Parse(adaptee.data["favouriteFoods.Size()"]);
+                for (int i = 0; i < size; i++)
+                    yield return new SpeciesAdapter(
+                        species[int.Parse(adaptee.data[$"favouriteFoods[{i}]"])], species);
+            }
+        }
+    }
+    public class AnimalAdapter : IAnimal
+    {
+        Animal adaptee;
+        Dictionary<int, Species> speciesDict;
+        public AnimalAdapter(Animal adaptee, Dictionary<int, Species> species)
+        {
+            this.adaptee = adaptee;
+            speciesDict = species;
+        }
+
+        public string name { get { return adaptee.data["name"]; } }
+        public int age { get { return int.Parse(adaptee.data["age"]); } }
+        public ISpecies species
+        {
+            get
+            {
+                return new SpeciesAdapter(speciesDict[int.Parse(adaptee.data["species"])], speciesDict);
+            }
+        }
+    }
+    public class EmployeeAdapter : IEmployee
+    {
+        Employee adaptee;
+        Dictionary<int, Species> speciesDict;
+        Dictionary<int, Employee> employeeDict;
+        Dictionary<int, Enclosure> enclosureDict;
+        public EmployeeAdapter(Employee adaptee, Dictionary<int, Species> speciesDict,
+            Dictionary<int, Employee> employeeDict, Dictionary<int, Enclosure> enclosureDict)
+        {
+            this.adaptee = adaptee;
+            this.speciesDict = speciesDict;
+            this.employeeDict = employeeDict;
+            this.enclosureDict = enclosureDict;
+        }
+
+        public string name { get { return adaptee.data["name"]; } }
+        public string surname { get { return adaptee.data["surname"]; } }
+        public int age { get { return int.Parse(adaptee.data["age"]); } }
+        public IEnumerable<IEnclosure> enclosures
+        {
+            get
+            {
+                int size = int.Parse(adaptee.data["enclosures.Size()"]);
+                for (int i = 0; i < size; i++)
+                    yield return new EnclosureAdapter(enclosureDict
+                        [int.Parse(adaptee.data[$"enclosures[{i}]"])], 
+                        speciesDict, employeeDict, enclosureDict);
+                
+            }
+        }
+    }
+    public class VisitorAdapter : IVisitor
+    {
+        Visitor adaptee;
+        Dictionary<int, Employee> employeeDict;
+        Dictionary<int, Species> speciesDict;
+        Dictionary<int, Enclosure> enclosureDict;
+
+        public VisitorAdapter(Visitor adaptee, Dictionary<int, Employee> employeeDict, Dictionary<int, Species> speciesDict, Dictionary<int, Enclosure> enclosureDict)
+        {
+            this.adaptee = adaptee;
+            this.employeeDict = employeeDict;
+            this.speciesDict = speciesDict;
+            this.enclosureDict = enclosureDict;
+        }
+
+        public string name { get { return adaptee.data["name"]; } }
+        public string surname { get { return adaptee.data["surname"]; } }
+        public IEnumerable<IEnclosure> visitedEnclosures
+        {
+            get
+            {
+                int size = int.Parse(adaptee.data["visitedEnclosures.Size()"]);
+                for (int i = 0; i < size; i++)
+                    yield return new EnclosureAdapter(enclosureDict
+                        [int.Parse(adaptee.data[$"visitedEnclosures[{i}]"])],
+                        speciesDict, employeeDict, enclosureDict);
+            }
+        }
+    }
+}
