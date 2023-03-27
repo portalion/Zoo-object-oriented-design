@@ -92,16 +92,16 @@ namespace Zoo
             Console.WriteLine(sb);
         }
 
-        static void Task2(Dictionary<string, IEnclosure> enclosures,
-            Dictionary<string, ISpecies> species, Dictionary<string, IAnimal> animals,
-            Dictionary<string, IEmployee> employees, Dictionary<string, IVisitor> visitors)
+        static void Task2(IEnumerable<IEnclosure> enclosures,
+            IEnumerable<ISpecies> species, IEnumerable<IAnimal> animals,
+            IEnumerable<IEmployee> employees, IEnumerable<IVisitor> visitors)
         {
-            foreach(var enclosure in enclosures.Values)
+            foreach(var enclosure in enclosures)
             {
                 int age = 0;
                 int count = 0;
                 List<IAnimal> toPrint = new List<IAnimal>();
-                foreach (var animal in animals.Values)
+                foreach (var animal in animals)
                     foreach(var specie in enclosure.animals)
                     if (animal.species.name == specie.name)
                     {
@@ -209,7 +209,11 @@ namespace Zoo
             foreach (var employee in employees)EmployeeAdapters.Add(employee.Key, new MainRepresentation.EmployeeAdapter(employee.Value));
             foreach (var visitor in visitors) VisitorAdapters.Add(visitor.Key, new MainRepresentation.VisitorAdapter(visitor.Value));
 
-            Task2(EnclosureAdapters , SpeciesAdapters, AnimalAdapters, EmployeeAdapters, VisitorAdapters);
+            Task2(EnclosureAdapters.Select(p => p.Value), 
+                SpeciesAdapters.Select(p => p.Value), 
+                AnimalAdapters.Select(p => p.Value), 
+                EmployeeAdapters.Select(p => p.Value), 
+                VisitorAdapters.Select(p => p.Value));
             Console.WriteLine();
         }
         static void SecondFormatOperations() 
@@ -315,11 +319,156 @@ namespace Zoo
                 VisitorAdapters.Add(visitor.Key, 
                     new SecondRepresentation.VisitorAdapter(visitor.Value, employees, species, enclosures));
 
-            Task2(EnclosureAdapters, SpeciesAdapters, AnimalAdapters, EmployeeAdapters, VisitorAdapters);
+            Task2(EnclosureAdapters.Select(p => p.Value),
+                SpeciesAdapters.Select(p => p.Value),
+                AnimalAdapters.Select(p => p.Value),
+                EmployeeAdapters.Select(p => p.Value),
+                VisitorAdapters.Select(p => p.Value)); 
             Console.WriteLine();
 
         }
-        static void ThirdFormatOperations() { }
+        static void ThirdFormatOperations() 
+        {
+            Dictionary<int, ThirdRepresentation.Enclosure> enclosures = new Dictionary<int, ThirdRepresentation.Enclosure>();
+            Dictionary<int, ThirdRepresentation.Animal> animals = new Dictionary<int, ThirdRepresentation.Animal>();
+            Dictionary<int, ThirdRepresentation.Employee> employees = new Dictionary<int, ThirdRepresentation.Employee>();
+            Dictionary<int, ThirdRepresentation.Species> species = new Dictionary<int, ThirdRepresentation.Species>();
+            Dictionary<int, ThirdRepresentation.Visitor> visitors = new Dictionary<int, ThirdRepresentation.Visitor>();
+
+            //Create Objects
+            int id = 0;
+            foreach (var speciesData in SpeciesData.Values) 
+            {
+                species[id] = new ThirdRepresentation.Species(id, new Dictionary<string, string>());
+                species[id].data["name"] = speciesData.name;
+                species[id].data["favouriteFoods.Size()"] = speciesData.foods.Length.ToString();
+                for(int i = 0; i < speciesData.foods.Length; i++)
+                    species[id].data[$"favouriteFoods[{i}]"] = speciesData.foods[i];
+                id++;
+            }
+
+            foreach (var specie in species)
+                for (int i = 0; i < int.Parse(specie.Value.data["favouriteFoods.Size()"]); i++)
+                    specie.Value.data[$"favouriteFoods[{i}]"] = species.Where(spe => spe.Value.data["name"] ==
+                    specie.Value.data[$"favouriteFoods[{i}]"]).First().Key.ToString();
+
+            id = 0;
+            foreach (var animalData in AnimalData.Values)
+            {
+                animals[id] = new ThirdRepresentation.Animal(id, new Dictionary<string, string>());
+                animals[id].data["name"] = animalData.name;
+                animals[id].data["age"] = animalData.age.ToString();
+                animals[id].data["species"] = 
+                    species.Where(spe => spe.Value.data["name"] == animalData.species)
+                    .First().Key.ToString();
+                id++;
+            }
+
+            id = 0;
+            foreach (var enclosureData in EnclosureData.Values)
+            {
+                enclosures[id] = new ThirdRepresentation.Enclosure(id, new Dictionary<string, string>());
+                enclosures[id].data["name"] = enclosureData.name;
+                enclosures[id].data["animals.Size()"] = enclosureData.animals.Length.ToString();
+                enclosures[id].data["employee"] = enclosureData.employee;
+                for(int i = 0; i < enclosureData.animals.Length; i++)
+                    enclosures[id].data[$"animals[{i}]"] = 
+                        species.Where(spe => spe.Value.data["name"] == enclosureData.animals[i]).First().Key.ToString();
+                id++;
+            }
+
+            id = 0;
+            foreach (var employeeData in EmployeeData.Values) 
+            {
+                employees[id] = new ThirdRepresentation.Employee(id, new Dictionary<string, string>());
+                employees[id].data["name"] = employeeData.name;
+                employees[id].data["surname"] = employeeData.surname;
+                employees[id].data["age"] = employeeData.age.ToString();
+                employees[id].data["enclosures.Size()"] = employeeData.enclosures.Length.ToString();
+                for(int i = 0; i < employeeData.enclosures.Length; i++)
+                    employees[id].data[$"enclosures[{i}]"] = 
+                        enclosures.Where(enc => (enc.Value.data["name"] == employeeData.enclosures[i]))
+                        .First().Key.ToString();
+                id++;
+            }
+
+            id = 0;
+            foreach(var visitor in VisitorData.Values)
+            {
+                visitors[id] = new ThirdRepresentation.Visitor(id, new Dictionary<string, string>());
+                visitors[id].data["name"] = visitor.name;
+                visitors[id].data["surname"] = visitor.surname;
+                visitors[id].data["visitedEnclosures.Size()"] = visitor.enclosures.Length.ToString();
+                for (int i = 0; i < visitor.enclosures.Length; i++)
+                    visitors[id].data[$"visitedEnclosures[{i}]"] =
+                        enclosures.Where(enc => (enc.Value.data["name"] == visitor.enclosures[i]))
+                        .First().Key.ToString();
+                id++;
+            }
+
+            foreach (var enclosure in enclosures)
+                enclosure.Value.data["employee"] = employees.Where(emp => 
+                (emp.Value.data["name"] + " " + emp.Value.data["surname"]) == enclosure.Value.data["employee"])
+                    .First().Key.ToString();
+
+
+            //Printing
+            Console.WriteLine("Enclosures: ");
+            foreach (var enclosure in enclosures.Values)
+                PrintEnclosure(new ThirdRepresentation.EnclosureAdapter(enclosure,
+                    species, employees, enclosures));
+            Console.WriteLine();
+            Console.WriteLine("Animals: ");
+            foreach (var animal in animals.Values)
+                PrintAnimal(new ThirdRepresentation.AnimalAdapter(animal, species));
+            Console.WriteLine();
+            Console.WriteLine("Species: ");
+            foreach (var specie in species.Values)
+                PrintSpecies(new ThirdRepresentation.SpeciesAdapter(specie, species));
+            Console.WriteLine();
+            Console.WriteLine("Employees: ");
+            foreach (var employee in employees.Values)
+                PrintEmployee(new ThirdRepresentation.EmployeeAdapter(
+                    employee, species, employees, enclosures));
+            Console.WriteLine();
+            Console.WriteLine("Visitors: ");
+            foreach (var visitor in visitors.Values)
+                PrintVisitor(new ThirdRepresentation.VisitorAdapter(visitor,
+                    employees, species, enclosures));
+            Console.WriteLine();
+
+
+            //Adapters and task2
+            Dictionary<int, IEnclosure> EnclosureAdapters = new Dictionary<int, IEnclosure>();
+            Dictionary<int, IAnimal> AnimalAdapters = new Dictionary<int, IAnimal>();
+            Dictionary<int, ISpecies> SpeciesAdapters = new Dictionary<int, ISpecies>();
+            Dictionary<int, IEmployee> EmployeeAdapters = new Dictionary<int, IEmployee>();
+            Dictionary<int, IVisitor> VisitorAdapters = new Dictionary<int, IVisitor>();
+
+            foreach (var enclosure in enclosures)
+                EnclosureAdapters.Add(enclosure.Key,
+                    new ThirdRepresentation.EnclosureAdapter(
+                        enclosure.Value, species, employees, enclosures));
+            foreach (var animal in animals)
+                AnimalAdapters.Add(animal.Key,
+                    new ThirdRepresentation.AnimalAdapter(animal.Value, species));
+            foreach (var specie in species)
+                SpeciesAdapters.Add(specie.Key,
+                    new ThirdRepresentation.SpeciesAdapter(specie.Value, species));
+            foreach (var employee in employees)
+                EmployeeAdapters.Add(employee.Key,
+                    new ThirdRepresentation.EmployeeAdapter(employee.Value, species, employees, enclosures));
+            foreach (var visitor in visitors)
+                VisitorAdapters.Add(visitor.Key,
+                    new ThirdRepresentation.VisitorAdapter(visitor.Value, employees, species, enclosures));
+
+            Task2(EnclosureAdapters.Select(p => p.Value),
+                SpeciesAdapters.Select(p => p.Value),
+                AnimalAdapters.Select(p => p.Value),
+                EmployeeAdapters.Select(p => p.Value),
+                VisitorAdapters.Select(p => p.Value));
+            Console.WriteLine();
+        }
         static void Main()
         {
             Console.WriteLine("Main representation: ");
