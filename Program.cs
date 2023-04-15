@@ -1,4 +1,6 @@
 ﻿using Collections;
+using System;
+using System.Security.Claims;
 using System.Text;
 
 namespace Zoo
@@ -7,9 +9,9 @@ namespace Zoo
     {
         static Dictionary<string, (string name, string[] animals, string employee)> EnclosureData = new Dictionary<string, (string, string[], string)>
         {
-            ["311"] = ("311", new string[] { "Penguin", "Python", "Panda" }, "Ricardo Stallmano"),
-            ["Break"] = ("Break", new string[] { "Cats", "Gopher", "Meerkat" }, "Steve Irvin"),
-            ["Jurasic Park"] = ("Jurasic Park", new string[] { "Kakapo", "Bengal Tiger", "Dungeness Crab" }, "Steve Irvin")
+            ["311"] = ("311", new string[] { "Arch", "Ubuntu", "Fedora", "Conda", "Samuel", "Jett" }, "Ricardo Stallmano"),
+            ["Break"] = ("Break", new string[] { "Arrow", "Andy", "Harold", "Ryan" }, "Steve Irvin"),
+            ["Jurasic Park"] = ("Jurasic Park", new string[] { "Jenkins", "Kaka", "Ada", "Claire" }, "Steve Irvin")
         };
         static Dictionary<string, (string name, int age, string species)> AnimalData = new Dictionary<string, (string, int, string)>
         {
@@ -129,13 +131,13 @@ namespace Zoo
             foreach (var enclosure in EnclosureData)
                 enclosures[enclosure.Key] = 
                     new MainRepresentation.Enclosure(enclosure.Value.name,
-                    new List<MainRepresentation.Species>(), 
+                    new List<MainRepresentation.Animal>(), 
                     employees[enclosure.Value.employee]);
             
             // Appending lists
             foreach (var enclosure in EnclosureData)
                 foreach (var animal in enclosure.Value.animals)
-                    enclosures[enclosure.Key].animals.Add(species[animal]);
+                    enclosures[enclosure.Key].animals.Add(animals[animal]);
 
             foreach (var visitor in VisitorData)
                 foreach (var enclosure in visitor.Value.enclosures)
@@ -247,7 +249,7 @@ namespace Zoo
             Console.WriteLine("Enclosures: ");
             foreach (var enclosure in enclosures.Values)
                 PrintEnclosure(new SecondRepresentation.EnclosureAdapter(enclosure, 
-                    species, employees, enclosures));
+                    species, employees, enclosures, animals));
             Console.WriteLine();
             Console.WriteLine("Animals: ");
             foreach (var animal in animals.Values)
@@ -260,12 +262,12 @@ namespace Zoo
             Console.WriteLine("Employees: ");
             foreach (var employee in employees.Values)
                 PrintEmployee(new SecondRepresentation.EmployeeAdapter(
-                    employee, species, employees, enclosures));
+                    employee, species, employees, enclosures, animals));
             Console.WriteLine();
             Console.WriteLine("Visitors: ");
             foreach (var visitor in visitors.Values)
                 PrintVisitor(new SecondRepresentation.VisitorAdapter(visitor,
-                    employees, species, enclosures));
+                    employees, species, enclosures, animals));
             Console.WriteLine();
 
             //Adapters and task2
@@ -278,7 +280,7 @@ namespace Zoo
             foreach (var enclosure in enclosures)
                 EnclosureAdapters.Add(enclosure.Key, 
                     new SecondRepresentation.EnclosureAdapter(
-                        enclosure.Value, species, employees, enclosures));
+                        enclosure.Value, species, employees, enclosures, animals));
             foreach (var animal in animals)
                 AnimalAdapters.Add(animal.Key, 
                     new SecondRepresentation.AnimalAdapter(animal.Value, species));
@@ -287,10 +289,10 @@ namespace Zoo
                     new SecondRepresentation.SpeciesAdapter(specie.Value, species));
             foreach (var employee in employees) 
                 EmployeeAdapters.Add(employee.Key, 
-                    new SecondRepresentation.EmployeeAdapter(employee.Value, species, employees, enclosures));
+                    new SecondRepresentation.EmployeeAdapter(employee.Value, species, employees, enclosures, animals));
             foreach (var visitor in visitors) 
                 VisitorAdapters.Add(visitor.Key, 
-                    new SecondRepresentation.VisitorAdapter(visitor.Value, employees, species, enclosures));
+                    new SecondRepresentation.VisitorAdapter(visitor.Value, employees, species, enclosures, animals));
 
             Task2(EnclosureAdapters.Values);
             Console.WriteLine();
@@ -342,7 +344,7 @@ namespace Zoo
                 enclosures[id].data["employee"] = enclosureData.employee;
                 for(int i = 0; i < enclosureData.animals.Length; i++)
                     enclosures[id].data[$"animals[{i}]"] = 
-                        species.Where(spe => spe.Value.data["name"] == enclosureData.animals[i]).First().Key.ToString();
+                        animals.Where(spe => spe.Value.data["name"] == enclosureData.animals[i]).First().Key.ToString();
                 id++;
             }
 
@@ -385,7 +387,7 @@ namespace Zoo
             Console.WriteLine("Enclosures: ");
             foreach (var enclosure in enclosures.Values)
                 PrintEnclosure(new ThirdRepresentation.EnclosureAdapter(enclosure,
-                    species, employees, enclosures));
+                    species, employees, enclosures, animals));
             Console.WriteLine();
             Console.WriteLine("Animals: ");
             foreach (var animal in animals.Values)
@@ -398,12 +400,12 @@ namespace Zoo
             Console.WriteLine("Employees: ");
             foreach (var employee in employees.Values)
                 PrintEmployee(new ThirdRepresentation.EmployeeAdapter(
-                    employee, species, employees, enclosures));
+                    employee, species, employees, enclosures, animals));
             Console.WriteLine();
             Console.WriteLine("Visitors: ");
             foreach (var visitor in visitors.Values)
                 PrintVisitor(new ThirdRepresentation.VisitorAdapter(visitor,
-                    employees, species, enclosures));
+                    employees, species, enclosures, animals));
             Console.WriteLine();
 
 
@@ -417,7 +419,7 @@ namespace Zoo
             foreach (var enclosure in enclosures)
                 EnclosureAdapters.Add(enclosure.Key,
                     new ThirdRepresentation.EnclosureAdapter(
-                        enclosure.Value, species, employees, enclosures));
+                        enclosure.Value, species, employees, enclosures, animals));
             foreach (var animal in animals)
                 AnimalAdapters.Add(animal.Key,
                     new ThirdRepresentation.AnimalAdapter(animal.Value, species));
@@ -426,10 +428,10 @@ namespace Zoo
                     new ThirdRepresentation.SpeciesAdapter(specie.Value, species));
             foreach (var employee in employees)
                 EmployeeAdapters.Add(employee.Key,
-                    new ThirdRepresentation.EmployeeAdapter(employee.Value, species, employees, enclosures));
+                    new ThirdRepresentation.EmployeeAdapter(employee.Value, species, employees, enclosures, animals));
             foreach (var visitor in visitors)
                 VisitorAdapters.Add(visitor.Key,
-                    new ThirdRepresentation.VisitorAdapter(visitor.Value, employees, species, enclosures));
+                    new ThirdRepresentation.VisitorAdapter(visitor.Value, employees, species, enclosures, animals));
 
             Task2(EnclosureAdapters.Values);
             Console.WriteLine();

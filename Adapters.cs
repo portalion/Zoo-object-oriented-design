@@ -109,7 +109,7 @@ namespace SecondRepresentation
             {
                 var names = adaptee.data.Split(',').Skip(1);
                 foreach (var specie in names)
-                    if (species.ContainsKey(specie)) yield return new AnimalAdapter(animalsDict[specie], species);
+                    if (animalsDict.ContainsKey(specie)) yield return new AnimalAdapter(animalsDict[specie], species);
                     else throw new KeyNotFoundException();
             } 
         }
