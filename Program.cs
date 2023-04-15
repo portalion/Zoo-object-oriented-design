@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using Collections;
+using System.Text;
 
 namespace Zoo
 {
@@ -91,31 +92,8 @@ namespace Zoo
             Console.WriteLine(sb);
         }
 
-        static void Task2(IEnumerable<IEnclosure> enclosures,
-            IEnumerable<ISpecies> species, IEnumerable<IAnimal> animals,
-            IEnumerable<IEmployee> employees, IEnumerable<IVisitor> visitors)
+        static void Task2(IEnumerable<IEnclosure> enclosures)
         {
-            foreach(var enclosure in enclosures)
-            {
-                int age = 0;
-                int count = 0;
-                List<IAnimal> toPrint = new List<IAnimal>();
-                foreach (var animal in animals)
-                    foreach(var specie in enclosure.animals)
-                    if (animal.species.name == specie.name)
-                    {
-                        age += animal.age;
-                        count++;
-                        toPrint.Add(animal);
-                    }
-                if (count != 0 && age / count >= 3) continue;
-                StringBuilder sb = new StringBuilder();
-                sb.Append(enclosure.name);
-                sb.Append(", [");
-                sb.AppendJoin(", ", toPrint.Select(animal => $"({animal.name}, {animal.age}, {animal.species.name})"));
-                sb.Append("]");
-                Console.WriteLine(sb);
-            }
         }
 
         static void MainFormatOperations()
@@ -208,11 +186,8 @@ namespace Zoo
             foreach (var employee in employees)EmployeeAdapters.Add(employee.Key, new MainRepresentation.EmployeeAdapter(employee.Value));
             foreach (var visitor in visitors) VisitorAdapters.Add(visitor.Key, new MainRepresentation.VisitorAdapter(visitor.Value));
 
-            Task2(EnclosureAdapters.Select(p => p.Value), 
-                SpeciesAdapters.Select(p => p.Value), 
-                AnimalAdapters.Select(p => p.Value), 
-                EmployeeAdapters.Select(p => p.Value), 
-                VisitorAdapters.Select(p => p.Value));
+            Task2(EnclosureAdapters.Values,  
+                AnimalAdapters.Values);
             Console.WriteLine();
         }
         static void SecondFormatOperations() 
@@ -318,11 +293,8 @@ namespace Zoo
                 VisitorAdapters.Add(visitor.Key, 
                     new SecondRepresentation.VisitorAdapter(visitor.Value, employees, species, enclosures));
 
-            Task2(EnclosureAdapters.Select(p => p.Value),
-                SpeciesAdapters.Select(p => p.Value),
-                AnimalAdapters.Select(p => p.Value),
-                EmployeeAdapters.Select(p => p.Value),
-                VisitorAdapters.Select(p => p.Value)); 
+            Task2(EnclosureAdapters.Values,
+                AnimalAdapters.Values);
             Console.WriteLine();
 
         }
@@ -461,11 +433,8 @@ namespace Zoo
                 VisitorAdapters.Add(visitor.Key,
                     new ThirdRepresentation.VisitorAdapter(visitor.Value, employees, species, enclosures));
 
-            Task2(EnclosureAdapters.Select(p => p.Value),
-                SpeciesAdapters.Select(p => p.Value),
-                AnimalAdapters.Select(p => p.Value),
-                EmployeeAdapters.Select(p => p.Value),
-                VisitorAdapters.Select(p => p.Value));
+            Task2(EnclosureAdapters.Values,
+                 AnimalAdapters.Values);
             Console.WriteLine();
         }
         static void Main()
