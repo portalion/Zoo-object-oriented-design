@@ -119,7 +119,7 @@ namespace DoubleLinkList
             return actual.prev != null;
         }
     }
-    class DoubleLinkList
+    class DoubleLinkList : ICollection
     {
         Node? Head = null;
         Node? Tail = null;

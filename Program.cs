@@ -94,18 +94,22 @@ namespace Zoo
             Console.WriteLine(sb);
         }
 
-        static void Task2(IEnumerable<IEnclosure> enclosures)
+        class Pred : Predicate
         {
-            foreach(var enclosure in enclosures)
+            public bool fulfills(IEnclosure e)
             {
                 int ageSum = 0;
-                foreach(var animal in enclosure.animals)
+                foreach (var animal in e.animals)
                 {
                     ageSum += animal.age;
                 }
-                if (ageSum / enclosure.animals.Count() < 3) 
-                    PrintEnclosure(enclosure);
+                return ageSum / e.animals.Count() < 3;
             }
+        }
+
+        static void Task2(ICollection enclosures)
+        {
+            Algorithms.Print(enclosures.GetIterator(), new Pred());
         }
 
         static void MainFormatOperations()
@@ -198,7 +202,11 @@ namespace Zoo
             foreach (var employee in employees)EmployeeAdapters.Add(employee.Key, new MainRepresentation.EmployeeAdapter(employee.Value));
             foreach (var visitor in visitors) VisitorAdapters.Add(visitor.Key, new MainRepresentation.VisitorAdapter(visitor.Value));
 
-            Task2(EnclosureAdapters.Values);
+            DoubleLinkList.DoubleLinkList enclosuresCollection = new DoubleLinkList.DoubleLinkList();
+            foreach (var enclosure in EnclosureAdapters.Values)
+                enclosuresCollection.Add(enclosure);
+
+            Task2(enclosuresCollection);
             Console.WriteLine();
         }
         static void SecondFormatOperations() 
@@ -304,7 +312,11 @@ namespace Zoo
                 VisitorAdapters.Add(visitor.Key, 
                     new SecondRepresentation.VisitorAdapter(visitor.Value, employees, species, enclosures, animals));
 
-            Task2(EnclosureAdapters.Values);
+            DoubleLinkList.DoubleLinkList enclosuresCollection = new DoubleLinkList.DoubleLinkList();
+            foreach (var enclosure in EnclosureAdapters.Values)
+                enclosuresCollection.Add(enclosure);
+
+            Task2(enclosuresCollection);
             Console.WriteLine();
 
         }
@@ -443,7 +455,11 @@ namespace Zoo
                 VisitorAdapters.Add(visitor.Key,
                     new ThirdRepresentation.VisitorAdapter(visitor.Value, employees, species, enclosures, animals));
 
-            Task2(EnclosureAdapters.Values);
+            DoubleLinkList.DoubleLinkList enclosuresCollection = new DoubleLinkList.DoubleLinkList();
+            foreach (var enclosure in EnclosureAdapters.Values)
+                enclosuresCollection.Add(enclosure);
+
+            Task2(enclosuresCollection);
             Console.WriteLine();
         }
         static void Main()
