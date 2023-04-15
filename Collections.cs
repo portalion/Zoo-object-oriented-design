@@ -21,13 +21,15 @@ namespace Collections
     {
         bool fulfills(IEnclosure toCheck);
     }
+    interface Function
+    {
+        void operations(IEnclosure toCheck);
+    }
 
     static class Algorithms
     {
-        static public IEnclosure? Find(ICollection collection, Predicate predicate, bool reverse)
+        static public IEnclosure? Find(Iterator toSearch, Predicate predicate)
         {
-            Iterator toSearch = reverse ? collection.GetReverseIterator() : collection.GetIterator();
-
             while (toSearch.HasMore())
             {
                 IEnclosure toCheck = toSearch.MoveNext();
@@ -35,16 +37,28 @@ namespace Collections
             }
             return null;
         }
-
-        static public void Print(ICollection collection, Predicate predicate, bool reverse)
+        static public void Print(Iterator toSearch, Predicate predicate)
         {
-            Iterator toSearch = reverse ? collection.GetReverseIterator() : collection.GetIterator();
-
             while (toSearch.HasMore())
             {
                 IEnclosure toCheck = toSearch.MoveNext();
                 if (predicate.fulfills(toCheck)) PrintEnclosure(toCheck);
             }
+        }
+        static public void ForEach(Iterator toSearch, Function function)
+        {
+            while (toSearch.HasMore())
+                function.operations(toSearch.MoveNext());
+        }
+        static public int CountIf(Iterator toSearch, Predicate predicate)
+        {
+            int counter = 0;
+            while (toSearch.HasMore())
+            {
+                IEnclosure toCheck = toSearch.MoveNext();
+                if (predicate.fulfills(toCheck)) counter++;
+            }
+            return counter;
         }
     }  
 }
