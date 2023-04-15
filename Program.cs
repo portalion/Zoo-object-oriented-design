@@ -55,7 +55,7 @@ namespace Zoo
             ["Ryker Polly"] = ("Ryker", "Polly", new string[] { "Break" })
         };
 
-        static void PrintEnclosure(IEnclosure enclosure)
+        public static void PrintEnclosure(IEnclosure enclosure)
         {
             StringBuilder sb = new StringBuilder();
             sb.Append($"{enclosure.name}, [");
@@ -63,13 +63,13 @@ namespace Zoo
             sb.Append($"], {enclosure.employee.name} {enclosure.employee.surname}");
             Console.WriteLine(sb);
         }
-        static void PrintAnimal(IAnimal animal) 
+        public static void PrintAnimal(IAnimal animal) 
         {
             StringBuilder sb = new StringBuilder();
             sb.Append($"{animal.name}, {animal.age}, {animal.species.name}");
             Console.WriteLine(sb);
         }
-        static void PrintSpecies(ISpecies species) 
+        public static void PrintSpecies(ISpecies species) 
         {
             StringBuilder sb = new StringBuilder();
             sb.Append($"{species.name}, [");
@@ -77,7 +77,7 @@ namespace Zoo
             sb.Append($"]");
             Console.WriteLine(sb);
         }
-        static void PrintEmployee(IEmployee employee) 
+        public static void PrintEmployee(IEmployee employee) 
         {
             StringBuilder sb = new StringBuilder();
             sb.Append($"{employee.name}, {employee.surname}, {employee.age}, [");
@@ -85,7 +85,7 @@ namespace Zoo
             sb.Append($"]");
             Console.WriteLine(sb);
         }
-        static void PrintVisitor(IVisitor visitor) 
+        public static void PrintVisitor(IVisitor visitor) 
         {
             StringBuilder sb = new StringBuilder();
             sb.Append($"{visitor.name}, {visitor.surname}, [");

@@ -1,12 +1,12 @@
-﻿using Zoo;
+﻿using static Zoo.Zoo;
+using Zoo;
 using Collections;
-using System.ComponentModel;
 
 namespace Collections
 {
     interface Iterator
     {
-        IEnclosure? MoveNext();
+        IEnclosure MoveNext();
         bool HasMore();
     }
     interface ICollection
@@ -16,6 +16,37 @@ namespace Collections
         Iterator GetIterator();
         Iterator GetReverseIterator();
     }
+
+    interface Predicate 
+    {
+        bool fulfills(IEnclosure toCheck);
+    }
+
+    static class Algorithms
+    {
+        static public IEnclosure? Find(ICollection collection, Predicate predicate, bool reverse)
+        {
+            Iterator toSearch = reverse ? collection.GetReverseIterator() : collection.GetIterator();
+
+            while (toSearch.HasMore())
+            {
+                IEnclosure toCheck = toSearch.MoveNext();
+                if (predicate.fulfills(toCheck)) return toCheck;
+            }
+            return null;
+        }
+
+        static public void Print(ICollection collection, Predicate predicate, bool reverse)
+        {
+            Iterator toSearch = reverse ? collection.GetReverseIterator() : collection.GetIterator();
+
+            while (toSearch.HasMore())
+            {
+                IEnclosure toCheck = toSearch.MoveNext();
+                if (predicate.fulfills(toCheck)) PrintEnclosure(toCheck);
+            }
+        }
+    }  
 }
 
 namespace DoubleLinkList
@@ -40,11 +71,12 @@ namespace DoubleLinkList
             actual = new Node();
             actual.next = ListStart;
         }
-        public IEnclosure? MoveNext()
+        public IEnclosure MoveNext()
         {
             if (!HasMore()) throw new IndexOutOfRangeException();
 
             actual = actual.next;
+            if (actual.value == null) throw new NullReferenceException();
             return actual.value;
         }
         public bool HasMore() 
@@ -60,11 +92,12 @@ namespace DoubleLinkList
             actual = new Node();
             actual.prev = ListEnd;
         }
-        public IEnclosure? MoveNext()
+        public IEnclosure MoveNext()
         {
             if (!HasMore()) throw new IndexOutOfRangeException();
 
             actual = actual.prev;
+            if (actual.value == null) throw new NullReferenceException();
             return actual.value;
         }
         public bool HasMore()
