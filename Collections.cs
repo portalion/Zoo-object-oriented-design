@@ -6,13 +6,14 @@ namespace Collections
 {
     interface Iterator
     {
-        IEnclosure MoveNext();
+        IEnclosure current { get; }
+        void MoveNext();
         bool HasMore();
     }
     interface ICollection
     {
         void Add(IEnclosure toAdd);
-        void Remove(IEnclosure toRemove);
+        void Remove(Iterator toRemove);
         Iterator GetIterator();
         Iterator GetReverseIterator();
     }
@@ -32,7 +33,7 @@ namespace Collections
         {
             while (toSearch.HasMore())
             {
-                IEnclosure toCheck = toSearch.MoveNext();
+                IEnclosure toCheck = toSearch.current;
                 if (predicate.fulfills(toCheck)) return toCheck;
             }
             return null;
@@ -41,86 +42,106 @@ namespace Collections
         {
             while (toSearch.HasMore())
             {
-                IEnclosure toCheck = toSearch.MoveNext();
-                if (predicate.fulfills(toCheck)) PrintEnclosure(toCheck);
+                if (predicate.fulfills(toSearch.current))
+                    PrintEnclosure(toSearch.current);
+                toSearch.MoveNext();
             }
+            if (predicate.fulfills(toSearch.current)) 
+                PrintEnclosure(toSearch.current);
         }
         static public void ForEach(Iterator toSearch, Function function)
         {
             while (toSearch.HasMore())
-                function.operations(toSearch.MoveNext());
+            {
+                function.operations(toSearch.current);
+                toSearch.MoveNext();
+            }
+            function.operations(toSearch.current);
         }
         static public int CountIf(Iterator toSearch, Predicate predicate)
         {
             int counter = 0;
             while (toSearch.HasMore())
             {
-                IEnclosure toCheck = toSearch.MoveNext();
-                if (predicate.fulfills(toCheck)) counter++;
+                if (predicate.fulfills(toSearch.current)) counter++;
+                toSearch.MoveNext();
             }
+            if (predicate.fulfills(toSearch.current)) counter++;
             return counter;
         }
     }  
-}
-
-namespace DoubleLinkList
-{
-    class Node
-    {
-        public IEnclosure? value { get; set; }
-        public Node? next { get; set; }
-        public Node? prev { get; set; }
-        public Node(IEnclosure? value = null, Node? prev = null, Node? next = null) 
-        {
-            this.value = value;
-            this.prev = prev;
-            this.next = next;
-        }
-    }
-    class ForwardDoubleLinkListIterator : Iterator 
-    {
-        Node? actual;
-        public ForwardDoubleLinkListIterator(Node? ListStart)
-        {
-            actual = new Node();
-            actual.next = ListStart;
-        }
-        public IEnclosure MoveNext()
-        {
-            if (!HasMore()) throw new IndexOutOfRangeException();
-
-            actual = actual.next;
-            if (actual.value == null) throw new NullReferenceException();
-            return actual.value;
-        }
-        public bool HasMore() 
-        {
-            return actual.next != null;
-        }
-    }
-    class ReverseDoubleLinkListIterator : Iterator
-    {
-        Node? actual;
-        public ReverseDoubleLinkListIterator(Node? ListEnd)
-        {
-            actual = new Node();
-            actual.prev = ListEnd;
-        }
-        public IEnclosure MoveNext()
-        {
-            if (!HasMore()) throw new IndexOutOfRangeException();
-
-            actual = actual.prev;
-            if (actual.value == null) throw new NullReferenceException();
-            return actual.value;
-        }
-        public bool HasMore()
-        {
-            return actual.prev != null;
-        }
-    }
+    
     class DoubleLinkList : ICollection
     {
+        class Node
+        {
+            public IEnclosure? value { get; set; }
+            public Node? next { get; set; }
+            public Node? prev { get; set; }
+            public Node(IEnclosure? value = null, Node? prev = null, Node? next = null)
+            {
+                this.value = value;
+                this.prev = prev;
+                this.next = next;
+            }
+        }
+        class ForwardDoubleLinkListIterator : Iterator
+        {
+            Node actual;
+            public ForwardDoubleLinkListIterator(Node? ListStart)
+            {
+                actual = new Node(null, null, ListStart);
+                MoveNext();
+            }
+            public IEnclosure current 
+            { 
+                get 
+                {
+                    if (actual.value == null) throw new NullReferenceException();
+                    return actual.value;
+                } 
+            }
+            public void MoveNext()
+            {
+                if (!HasMore()) throw new IndexOutOfRangeException();
+
+                actual = actual.next;
+                
+            }
+            public bool HasMore()
+            {
+                return actual.next != null;
+            }
+        }
+        class ReverseDoubleLinkListIterator : Iterator
+        {
+            Node actual;
+            public ReverseDoubleLinkListIterator(Node? ListEnd)
+            {
+                actual = new Node(null, ListEnd, null);
+                MoveNext();
+            }
+
+            public IEnclosure current
+            {
+                get
+                {
+                    if (actual.value == null) throw new NullReferenceException();
+                    return actual.value;
+                }
+            }
+
+            public void MoveNext()
+            {
+                if (!HasMore()) throw new IndexOutOfRangeException();
+
+                actual = actual.prev;
+            }
+            public bool HasMore()
+            {
+                return actual.prev != null;
+            }
+        }
         Node? Head = null;
         Node? Tail = null;
         public void Add(IEnclosure toAdd) 
@@ -140,8 +161,9 @@ namespace DoubleLinkList
             Head = new Node(toAdd, null, Head);
             Head.next.prev = Head;
         }
-        public void Remove(IEnclosure toRemove) 
+        public void Remove(Iterator val) 
         {
+            var toRemove = val.current;
             Node? actual = Head;
             if (actual == null) return;
             while (actual.next != null && actual.value != toRemove) actual = actual.next;
