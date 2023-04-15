@@ -96,6 +96,16 @@ namespace Zoo
 
         static void Task2(IEnumerable<IEnclosure> enclosures)
         {
+            foreach(var enclosure in enclosures)
+            {
+                int ageSum = 0;
+                foreach(var animal in enclosure.animals)
+                {
+                    ageSum += animal.age;
+                }
+                if (ageSum / enclosure.animals.Count() < 3) 
+                    PrintEnclosure(enclosure);
+            }
         }
 
         static void MainFormatOperations()

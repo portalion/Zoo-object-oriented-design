@@ -113,7 +113,6 @@ namespace SecondRepresentation
                     else throw new KeyNotFoundException();
             } 
         }
-
     }
     public class SpeciesAdapter : ISpecies
     {
