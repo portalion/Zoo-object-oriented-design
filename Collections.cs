@@ -32,7 +32,6 @@ namespace DoubleLinkList
             this.next = next;
         }
     }
-
     class ForwardDoubleLinkListIterator : Iterator 
     {
         Node? actual;
@@ -73,7 +72,6 @@ namespace DoubleLinkList
             return actual.prev != null;
         }
     }
-
     class DoubleLinkList
     {
         Node? Head = null;
