@@ -186,8 +186,7 @@ namespace Zoo
             foreach (var employee in employees)EmployeeAdapters.Add(employee.Key, new MainRepresentation.EmployeeAdapter(employee.Value));
             foreach (var visitor in visitors) VisitorAdapters.Add(visitor.Key, new MainRepresentation.VisitorAdapter(visitor.Value));
 
-            Task2(EnclosureAdapters.Values,  
-                AnimalAdapters.Values);
+            Task2(EnclosureAdapters.Values);
             Console.WriteLine();
         }
         static void SecondFormatOperations() 
@@ -293,8 +292,7 @@ namespace Zoo
                 VisitorAdapters.Add(visitor.Key, 
                     new SecondRepresentation.VisitorAdapter(visitor.Value, employees, species, enclosures));
 
-            Task2(EnclosureAdapters.Values,
-                AnimalAdapters.Values);
+            Task2(EnclosureAdapters.Values);
             Console.WriteLine();
 
         }
@@ -433,8 +431,7 @@ namespace Zoo
                 VisitorAdapters.Add(visitor.Key,
                     new ThirdRepresentation.VisitorAdapter(visitor.Value, employees, species, enclosures));
 
-            Task2(EnclosureAdapters.Values,
-                 AnimalAdapters.Values);
+            Task2(EnclosureAdapters.Values);
             Console.WriteLine();
         }
         static void Main()

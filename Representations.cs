@@ -3,7 +3,7 @@
     public interface IEnclosure
     {
         string name { get; }
-        IEnumerable<ISpecies> animals { get; }
+        IEnumerable<IAnimal> animals { get; }
         IEmployee employee { get; }
     }
     public interface IAnimal
@@ -37,10 +37,10 @@ namespace MainRepresentation
     public class Enclosure
     {
         public string name { get; set; }
-        public List<Species> animals { get; set; }
+        public List<Animal> animals { get; set; }
         public Employee employee { get; set; }
 
-        public Enclosure(string name, List<Species> animals, Employee employee)
+        public Enclosure(string name, List<Animal> animals, Employee employee)
         {
             this.name = name;
             this.animals = animals;

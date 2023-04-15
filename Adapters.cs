@@ -9,12 +9,12 @@ namespace MainRepresentation
 
         public string name { get { return adaptee.name; } }
         public IEmployee employee { get { return new EmployeeAdapter(adaptee.employee); } }
-        public IEnumerable<ISpecies> animals
+        public IEnumerable<IAnimal> animals
         {
             get
             {
-                foreach (var specie in adaptee.animals)
-                    yield return new SpeciesAdapter(specie);
+                foreach (var animal in adaptee.animals)
+                    yield return new AnimalAdapter(animal);
             }
         }
     }
@@ -81,13 +81,15 @@ namespace SecondRepresentation
         Dictionary<string, Species> species;
         Dictionary<string, Employee> employees;
         Dictionary<string, Enclosure> enclosures;
+        Dictionary<string, Animal> animalsDict;
         public EnclosureAdapter(Enclosure adaptee, Dictionary<string, Species> species, 
-            Dictionary<string, Employee> employees, Dictionary<string, Enclosure> enclosures)
+            Dictionary<string, Employee> employees, Dictionary<string, Enclosure> enclosures, Dictionary<string, Animal> animalsDict)
         {
             this.adaptee = adaptee;
             this.species = species;
             this.enclosures = enclosures;
             this.employees = employees;
+            this.animalsDict = animalsDict;
         }
 
         public string name { get { return adaptee.data.Split('@')[0]; } }
@@ -97,17 +99,17 @@ namespace SecondRepresentation
             {
                 var key = adaptee.data.Split('@')[1].Split(',')[0];
                 if (employees.ContainsKey(key))
-                    return new EmployeeAdapter(employees[key], species, employees, enclosures);
+                    return new EmployeeAdapter(employees[key], species, employees, enclosures, animalsDict);
                 else throw new KeyNotFoundException();
             } 
         }
-        public IEnumerable<ISpecies> animals
+        public IEnumerable<IAnimal> animals
         { 
             get 
             {
                 var names = adaptee.data.Split(',').Skip(1);
                 foreach (var specie in names)
-                    if (species.ContainsKey(specie)) yield return new SpeciesAdapter(species[specie], species);
+                    if (species.ContainsKey(specie)) yield return new AnimalAdapter(animalsDict[specie], species);
                     else throw new KeyNotFoundException();
             } 
         }
@@ -172,13 +174,15 @@ namespace SecondRepresentation
         Dictionary<string, Species> speciesDict;
         Dictionary<string, Employee> employeeDict;
         Dictionary<string, Enclosure> enclosureDict;
+        Dictionary<string, Animal> animalsDict;
         public EmployeeAdapter(Employee adaptee, Dictionary<string, Species> speciesDict,
-            Dictionary<string, Employee> employeeDict, Dictionary<string, Enclosure> enclosureDict)
+            Dictionary<string, Employee> employeeDict, Dictionary<string, Enclosure> enclosureDict, Dictionary<string, Animal> animalsDict)
         {
             this.adaptee = adaptee;
             this.speciesDict = speciesDict;
             this.employeeDict = employeeDict;
             this.enclosureDict = enclosureDict;
+            this.animalsDict = animalsDict;
         }
 
         public string name { get { return adaptee.data.Split(' ')[0]; } }
@@ -191,7 +195,7 @@ namespace SecondRepresentation
                 var keys = adaptee.data.Split('@')[1].Split(',');
                 foreach (var key in keys)
                     if (enclosureDict.ContainsKey(key))
-                        yield return new EnclosureAdapter(enclosureDict[key], speciesDict, employeeDict, enclosureDict);
+                        yield return new EnclosureAdapter(enclosureDict[key], speciesDict, employeeDict, enclosureDict, animalsDict);
                     else throw new KeyNotFoundException();
             }
         }
@@ -202,13 +206,15 @@ namespace SecondRepresentation
         Dictionary<string, Employee> employeeDict;
         Dictionary<string, Species> speciesDict;
         Dictionary<string, Enclosure> enclosureDict;
+        Dictionary<string, Animal> animalsDict;
 
-        public VisitorAdapter(Visitor adaptee, Dictionary<string, Employee> employeeDict, Dictionary<string, Species> speciesDict, Dictionary<string, Enclosure> enclosureDict)
+        public VisitorAdapter(Visitor adaptee, Dictionary<string, Employee> employeeDict, Dictionary<string, Species> speciesDict, Dictionary<string, Enclosure> enclosureDict, Dictionary<string, Animal> animalsDict)
         {
             this.adaptee = adaptee;
             this.employeeDict = employeeDict;
             this.speciesDict = speciesDict;
             this.enclosureDict = enclosureDict;
+            this.animalsDict = animalsDict;
         }
 
         public string name { get { return adaptee.data.Split(' ')[0]; } }
@@ -222,7 +228,7 @@ namespace SecondRepresentation
                 {
                     if (enclosureDict.ContainsKey(key))
                         yield return new EnclosureAdapter(enclosureDict[key], speciesDict,
-                            employeeDict, enclosureDict);
+                            employeeDict, enclosureDict, animalsDict);
                     else throw new KeyNotFoundException();
                 }
             }
@@ -236,15 +242,17 @@ namespace ThirdRepresentation
     {
         Enclosure adaptee;
         Dictionary<int, Species> species;
+        Dictionary<int, Animal> animalsDict;
         Dictionary<int, Employee> employees;
         Dictionary<int, Enclosure> enclosures;
         public EnclosureAdapter(Enclosure adaptee, Dictionary<int, Species> species,
-            Dictionary<int, Employee> employees, Dictionary<int, Enclosure> enclosures)
+            Dictionary<int, Employee> employees, Dictionary<int, Enclosure> enclosures, Dictionary<int, Animal> animals)
         {
             this.adaptee = adaptee;
             this.species = species;
             this.enclosures = enclosures;
             this.employees = employees;
+            this.animalsDict = animals;
         }
 
         public string name { get { return adaptee.data["name"]; } }
@@ -253,16 +261,16 @@ namespace ThirdRepresentation
             get
             {
                 var id = int.Parse(adaptee.data["employee"]);
-                return new EmployeeAdapter(employees[id], species, employees, enclosures);
+                return new EmployeeAdapter(employees[id], species, employees, enclosures, animalsDict);
             }
         }
-        public IEnumerable<ISpecies> animals
+        public IEnumerable<IAnimal> animals
         {
             get
             {
                 int size = int.Parse(adaptee.data["animals.Size()"]);
                 for (int i = 0; i < size; i++)
-                    yield return new SpeciesAdapter(species[int.Parse(adaptee.data[$"animals[{i}]"])], species);
+                    yield return new AnimalAdapter(animalsDict[int.Parse(adaptee.data[$"animals[{i}]"])], species);
             }
         }
 
@@ -319,16 +327,18 @@ namespace ThirdRepresentation
     public class EmployeeAdapter : IEmployee
     {
         Employee adaptee;
+        Dictionary<int, Animal> animalsDict;
         Dictionary<int, Species> speciesDict;
         Dictionary<int, Employee> employeeDict;
         Dictionary<int, Enclosure> enclosureDict;
         public EmployeeAdapter(Employee adaptee, Dictionary<int, Species> speciesDict,
-            Dictionary<int, Employee> employeeDict, Dictionary<int, Enclosure> enclosureDict)
+            Dictionary<int, Employee> employeeDict, Dictionary<int, Enclosure> enclosureDict, Dictionary<int, Animal> animalsDict)
         {
             this.adaptee = adaptee;
             this.speciesDict = speciesDict;
             this.employeeDict = employeeDict;
             this.enclosureDict = enclosureDict;
+            this.animalsDict = animalsDict;
         }
 
         public string name { get { return adaptee.data["name"]; } }
@@ -342,7 +352,7 @@ namespace ThirdRepresentation
                 for (int i = 0; i < size; i++)
                     yield return new EnclosureAdapter(enclosureDict
                         [int.Parse(adaptee.data[$"enclosures[{i}]"])], 
-                        speciesDict, employeeDict, enclosureDict);
+                        speciesDict, employeeDict, enclosureDict, animalsDict);
                 
             }
         }
@@ -353,13 +363,15 @@ namespace ThirdRepresentation
         Dictionary<int, Employee> employeeDict;
         Dictionary<int, Species> speciesDict;
         Dictionary<int, Enclosure> enclosureDict;
+        Dictionary<int, Animal> animalsDict;
 
-        public VisitorAdapter(Visitor adaptee, Dictionary<int, Employee> employeeDict, Dictionary<int, Species> speciesDict, Dictionary<int, Enclosure> enclosureDict)
+        public VisitorAdapter(Visitor adaptee, Dictionary<int, Employee> employeeDict, Dictionary<int, Species> speciesDict, Dictionary<int, Enclosure> enclosureDict, Dictionary<int, Animal> animalsDict)
         {
             this.adaptee = adaptee;
             this.employeeDict = employeeDict;
             this.speciesDict = speciesDict;
             this.enclosureDict = enclosureDict;
+            this.animalsDict = animalsDict;
         }
 
         public string name { get { return adaptee.data["name"]; } }
@@ -372,7 +384,7 @@ namespace ThirdRepresentation
                 for (int i = 0; i < size; i++)
                     yield return new EnclosureAdapter(enclosureDict
                         [int.Parse(adaptee.data[$"visitedEnclosures[{i}]"])],
-                        speciesDict, employeeDict, enclosureDict);
+                        speciesDict, employeeDict, enclosureDict, animalsDict);
             }
         }
     }
