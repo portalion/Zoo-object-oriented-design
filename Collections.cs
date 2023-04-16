@@ -184,4 +184,108 @@ namespace Collections
             return new ReverseDoubleLinkListIterator(Tail);
         }
     }
+
+    class Vector : ICollection
+    {
+        class ForwardVectorIterator : Iterator
+        {
+            int index;
+            Vector vector;
+            public ForwardVectorIterator(Vector vector)
+            {
+                index = 0;
+                this.vector = vector;
+            }
+
+            public IEnclosure current
+            {
+                get
+                {
+                    return vector.values[index];
+                }
+            }
+
+            public void MoveNext()
+            {
+                if (!HasMore()) throw new IndexOutOfRangeException();
+                index++;
+            }
+
+            public bool HasMore()
+            {
+                return index < vector.size - 1;
+            }
+        }
+        class ReverseVectorIterator : Iterator
+        {
+            int index;
+            Vector vector;
+            public ReverseVectorIterator(Vector vector)
+            {
+                index = vector.size - 1;
+                this.vector = vector;
+            }
+
+            public IEnclosure current
+            {
+                get
+                {
+                    return vector.values[index];
+                }
+            }
+
+            public void MoveNext()
+            {
+                if (!HasMore()) throw new IndexOutOfRangeException();
+                index--;
+            }
+
+            public bool HasMore()
+            {
+                return index > 0;
+            }
+        }
+        int size;
+        IEnclosure?[] values;
+        public Vector(int size = 2)
+        {
+            if (size < 2) throw new ArgumentException("size");
+            values = new IEnclosure?[size];
+            this.size = 0;
+        }
+
+        public void Add(IEnclosure value)
+        {
+            if(values.Length == size)
+            {
+                var tmp = values;
+                values = new IEnclosure?[tmp.Length * 2];
+                for (int i = 0; i < size; i++)
+                    values[i] = tmp[i];
+            }
+           
+            values[size++] = value;
+        }
+
+        public void Remove(Iterator iterator)
+        {
+            int toDelete = 0;
+            for (toDelete = 0; toDelete < size; toDelete++)
+                if (values[toDelete] == iterator.current) break;
+
+            for (int i = toDelete; i < size - 1; i++)
+                values[i] = values[i + 1];
+
+            values[size--] = null;
+        }
+
+        public Iterator GetIterator()
+        {
+            return new ForwardVectorIterator(this);
+        }
+        public Iterator GetReverseIterator()
+        {
+            return new ReverseVectorIterator(this);
+        }
+    }
 }

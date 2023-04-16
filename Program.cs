@@ -202,7 +202,7 @@ namespace Zoo
             foreach (var employee in employees)EmployeeAdapters.Add(employee.Key, new MainRepresentation.EmployeeAdapter(employee.Value));
             foreach (var visitor in visitors) VisitorAdapters.Add(visitor.Key, new MainRepresentation.VisitorAdapter(visitor.Value));
 
-            DoubleLinkList.DoubleLinkList enclosuresCollection = new DoubleLinkList.DoubleLinkList();
+            DoubleLinkList enclosuresCollection = new DoubleLinkList();
             foreach (var enclosure in EnclosureAdapters.Values)
                 enclosuresCollection.Add(enclosure);
 
@@ -312,7 +312,7 @@ namespace Zoo
                 VisitorAdapters.Add(visitor.Key, 
                     new SecondRepresentation.VisitorAdapter(visitor.Value, employees, species, enclosures, animals));
 
-            DoubleLinkList.DoubleLinkList enclosuresCollection = new DoubleLinkList.DoubleLinkList();
+            DoubleLinkList enclosuresCollection = new DoubleLinkList();
             foreach (var enclosure in EnclosureAdapters.Values)
                 enclosuresCollection.Add(enclosure);
 
@@ -455,7 +455,7 @@ namespace Zoo
                 VisitorAdapters.Add(visitor.Key,
                     new ThirdRepresentation.VisitorAdapter(visitor.Value, employees, species, enclosures, animals));
 
-            DoubleLinkList.DoubleLinkList enclosuresCollection = new DoubleLinkList.DoubleLinkList();
+            Vector enclosuresCollection = new Vector();
             foreach (var enclosure in EnclosureAdapters.Values)
                 enclosuresCollection.Add(enclosure);
 
