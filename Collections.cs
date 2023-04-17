@@ -19,7 +19,6 @@ namespace Collections
         Iterator GetIterator();
         Iterator GetReverseIterator();
     }
-
     interface Predicate 
     {
         bool fulfills(IEnclosure toCheck);
@@ -81,29 +80,27 @@ namespace Collections
         }
         class ForwardDoubleLinkListIterator : Iterator
         {
-            Node actual;
+            Node? actual;
             public ForwardDoubleLinkListIterator(Node? ListStart)
             {
                 actual = new Node(null, null, ListStart);
-                MoveNext();
             }
             public IEnclosure? MoveNext()
             {
-                actual = actual.next;
+                actual = actual?.next;
                 return actual?.value;
             }
         }
         class ReverseDoubleLinkListIterator : Iterator
         {
-            Node actual;
+            Node? actual;
             public ReverseDoubleLinkListIterator(Node? ListEnd)
             {
                 actual = new Node(null, ListEnd, null);
-                MoveNext();
             }
             public IEnclosure? MoveNext()
             {
-                actual = actual.prev;
+                actual = actual?.prev;
                 return actual?.value;
             }
         }
@@ -128,7 +125,8 @@ namespace Collections
         }
         public void Remove(Iterator val) 
         {
-            var toRemove = val.MoveNext();
+            IEnclosure? toRemove = val.MoveNext();
+            if (toRemove == null) return;
             Node? actual = Head;
             if (actual == null) return;
             while (actual.next != null && actual.value != toRemove) actual = actual.next;
@@ -158,21 +156,12 @@ namespace Collections
             Vector vector;
             public ForwardVectorIterator(Vector vector)
             {
-                index = 0;
+                index = -1;
                 this.vector = vector;
             }
-
-            public IEnclosure current
+            public IEnclosure? MoveNext()
             {
-                get
-                {
-                    return vector.values[index];
-                }
-            }
-
-            public IEnclosure MoveNext()
-            {
-                return vector.values[index++];
+                return index == vector.size ? null : vector.values[++index];
             }
         }
         class ReverseVectorIterator : Iterator
@@ -181,13 +170,13 @@ namespace Collections
             Vector vector;
             public ReverseVectorIterator(Vector vector)
             {
-                index = vector.size - 1;
+                index = vector.size;
                 this.vector = vector;
             }
 
-            public IEnclosure MoveNext()
+            public IEnclosure? MoveNext()
             {
-                return vector.values[index--];
+                return index == 0 ? null : vector.values[--index];
             }
         }
         int size;
@@ -214,7 +203,8 @@ namespace Collections
 
         public void Remove(Iterator iterator)
         {
-            IEnclosure toDeleteEnclosure = iterator.MoveNext();
+            IEnclosure? toDeleteEnclosure = iterator.MoveNext();
+            if (toDeleteEnclosure == null) return;
             int toDelete = 0;
             for (toDelete = 0; toDelete < size; toDelete++)
                 if (values[toDelete] == toDeleteEnclosure) break;
@@ -257,7 +247,6 @@ namespace Collections
             Node? root;
             int state;
             ForwardBinaryTreeIterator? it;
-
             public ForwardBinaryTreeIterator(Node? root)
             {
                 this.root = root;
@@ -269,12 +258,12 @@ namespace Collections
                     it = new ForwardBinaryTreeIterator(this.root.left);
                 }
             }
-            public IEnclosure MoveNext()
+            public IEnclosure? MoveNext()
             {
                 if (state == 0) return null;
                 else if (state == 1)
                 {
-                    IEnclosure toCheck = it.MoveNext();
+                    IEnclosure? toCheck = it?.MoveNext();
                     if (toCheck != null) return toCheck;
 
                     state = 2;
@@ -283,10 +272,45 @@ namespace Collections
                 else if (state == 2)
                 {
                     state = 3;
-                    it = new ForwardBinaryTreeIterator(root.right);
-                    return root.value;
+                    it = new ForwardBinaryTreeIterator(root?.right);
+                    return root?.value;
                 }
-                else return it.MoveNext();
+                else return it?.MoveNext();
+            }
+        }
+        class ReverseBinaryTreeIterator : Iterator
+        {
+            Node? root;
+            int state;
+            ReverseBinaryTreeIterator? it;
+            public ReverseBinaryTreeIterator(Node? root)
+            {
+                this.root = root;
+                if (this.root == null) state = 0;
+                else
+                {
+                    state = 1;
+                    it = new ReverseBinaryTreeIterator(this.root.right);
+                }
+            }
+            public IEnclosure? MoveNext()
+            {
+                if (state == 0) return null;
+                else if (state == 1)
+                {
+                    IEnclosure? toCheck = it?.MoveNext();
+                    if (toCheck != null) return toCheck;
+
+                    state = 2;
+                    return MoveNext();
+                }
+                else if (state == 2)
+                {
+                    state = 3;
+                    it = new ReverseBinaryTreeIterator(root?.left);
+                    return root?.value;
+                }
+                else return it?.MoveNext();
             }
         }
 
@@ -302,7 +326,7 @@ namespace Collections
         }
         public Iterator GetReverseIterator()
         {
-            return new ForwardBinaryTreeIterator(root);
+            return new ReverseBinaryTreeIterator(root);
         }
 
         Node? getNodeWithValue(Node? node, IEnclosure value)
@@ -359,7 +383,9 @@ namespace Collections
         public void Remove(Iterator iter)
         {
             if (root == null) return;
-            IEnclosure value = iter.MoveNext();
+            IEnclosure? value = iter.MoveNext();
+
+            if (value == null) return;
 
             Node? toDelete = getNodeWithValue(root, value);
             if (toDelete == null) return;

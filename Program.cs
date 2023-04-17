@@ -110,6 +110,8 @@ namespace Zoo
         static void Task2(ICollection enclosures)
         {
             Algorithms.Print(enclosures.GetReverseIterator(), new Pred());
+            Console.WriteLine();
+            Algorithms.Print(enclosures.GetIterator(), new Pred());
         }
 
         static void MainFormatOperations()
