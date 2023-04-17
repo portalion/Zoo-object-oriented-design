@@ -109,7 +109,7 @@ namespace Zoo
 
         static void Task2(ICollection enclosures)
         {
-            Algorithms.Print(enclosures.GetIterator(), new Pred());
+            Algorithms.Print(enclosures.GetReverseIterator(), new Pred());
         }
 
         static void MainFormatOperations()
@@ -312,7 +312,7 @@ namespace Zoo
                 VisitorAdapters.Add(visitor.Key, 
                     new SecondRepresentation.VisitorAdapter(visitor.Value, employees, species, enclosures, animals));
 
-            DoubleLinkList enclosuresCollection = new DoubleLinkList();
+            BinaryTree enclosuresCollection = new BinaryTree();
             foreach (var enclosure in EnclosureAdapters.Values)
                 enclosuresCollection.Add(enclosure);
 

@@ -10,9 +10,7 @@ namespace Collections
 {
     interface Iterator
     {
-        IEnclosure current { get; }
-        void MoveNext();
-        bool HasMore();
+        IEnclosure? MoveNext();
     }
     interface ICollection
     {
@@ -35,43 +33,35 @@ namespace Collections
     {
         static public IEnclosure? Find(Iterator toSearch, Predicate predicate)
         {
-            while (toSearch.HasMore())
+            IEnclosure? toCheck;
+            while ((toCheck = toSearch.MoveNext()) != null)
             {
-                IEnclosure toCheck = toSearch.current;
                 if (predicate.fulfills(toCheck)) return toCheck;
             }
             return null;
         }
         static public void Print(Iterator toSearch, Predicate predicate)
         {
-            while (toSearch.HasMore())
+            IEnclosure? toCheck;
+            while ((toCheck = toSearch.MoveNext()) != null)
             {
-                if (predicate.fulfills(toSearch.current))
-                    PrintEnclosure(toSearch.current);
-                toSearch.MoveNext();
+                if (predicate.fulfills(toCheck))
+                    PrintEnclosure(toCheck);
             }
-            if (predicate.fulfills(toSearch.current)) 
-                PrintEnclosure(toSearch.current);
         }
         static public void ForEach(Iterator toSearch, Function function)
         {
-            while (toSearch.HasMore())
-            {
-                function.operations(toSearch.current);
-                toSearch.MoveNext();
-            }
-            function.operations(toSearch.current);
+            IEnclosure? toCheck;
+            while ((toCheck = toSearch.MoveNext()) != null)
+                function.operations(toCheck);
         }
         static public int CountIf(Iterator toSearch, Predicate predicate)
         {
             int counter = 0;
-            while (toSearch.HasMore())
-            {
-                if (predicate.fulfills(toSearch.current)) counter++;
-                toSearch.MoveNext();
-            }
-            if (predicate.fulfills(toSearch.current)) counter++;
-            return counter;
+            IEnclosure? toCheck;
+            while ((toCheck = toSearch.MoveNext()) != null)
+                if (predicate.fulfills(toCheck)) counter++;
+            return counter;        
         }
     }  
     
@@ -97,24 +87,10 @@ namespace Collections
                 actual = new Node(null, null, ListStart);
                 MoveNext();
             }
-            public IEnclosure current 
-            { 
-                get 
-                {
-                    if (actual.value == null) throw new NullReferenceException();
-                    return actual.value;
-                } 
-            }
-            public void MoveNext()
+            public IEnclosure? MoveNext()
             {
-                if (!HasMore()) throw new IndexOutOfRangeException();
-
                 actual = actual.next;
-                
-            }
-            public bool HasMore()
-            {
-                return actual.next != null;
+                return actual?.value;
             }
         }
         class ReverseDoubleLinkListIterator : Iterator
@@ -125,25 +101,10 @@ namespace Collections
                 actual = new Node(null, ListEnd, null);
                 MoveNext();
             }
-
-            public IEnclosure current
+            public IEnclosure? MoveNext()
             {
-                get
-                {
-                    if (actual.value == null) throw new NullReferenceException();
-                    return actual.value;
-                }
-            }
-
-            public void MoveNext()
-            {
-                if (!HasMore()) throw new IndexOutOfRangeException();
-
                 actual = actual.prev;
-            }
-            public bool HasMore()
-            {
-                return actual.prev != null;
+                return actual?.value;
             }
         }
         Node? Head = null;
@@ -167,7 +128,7 @@ namespace Collections
         }
         public void Remove(Iterator val) 
         {
-            var toRemove = val.current;
+            var toRemove = val.MoveNext();
             Node? actual = Head;
             if (actual == null) return;
             while (actual.next != null && actual.value != toRemove) actual = actual.next;
@@ -209,15 +170,9 @@ namespace Collections
                 }
             }
 
-            public void MoveNext()
+            public IEnclosure MoveNext()
             {
-                if (!HasMore()) throw new IndexOutOfRangeException();
-                index++;
-            }
-
-            public bool HasMore()
-            {
-                return index < vector.size - 1;
+                return vector.values[index++];
             }
         }
         class ReverseVectorIterator : Iterator
@@ -230,23 +185,9 @@ namespace Collections
                 this.vector = vector;
             }
 
-            public IEnclosure current
+            public IEnclosure MoveNext()
             {
-                get
-                {
-                    return vector.values[index];
-                }
-            }
-
-            public void MoveNext()
-            {
-                if (!HasMore()) throw new IndexOutOfRangeException();
-                index--;
-            }
-
-            public bool HasMore()
-            {
-                return index > 0;
+                return vector.values[index--];
             }
         }
         int size;
@@ -273,9 +214,10 @@ namespace Collections
 
         public void Remove(Iterator iterator)
         {
+            IEnclosure toDeleteEnclosure = iterator.MoveNext();
             int toDelete = 0;
             for (toDelete = 0; toDelete < size; toDelete++)
-                if (values[toDelete] == iterator.current) break;
+                if (values[toDelete] == toDeleteEnclosure) break;
 
             for (int i = toDelete; i < size - 1; i++)
                 values[i] = values[i + 1];
@@ -312,57 +254,39 @@ namespace Collections
 
         class ForwardBinaryTreeIterator : Iterator
         {
-            Node? actual;
+            Node? root;
             int state;
             ForwardBinaryTreeIterator? it;
 
             public ForwardBinaryTreeIterator(Node? root)
             {
-                actual = root;
-                if (actual == null) state = 0;
+                this.root = root;
+                if (this.root == null)
+                    state = 0;
                 else
                 {
                     state = 1;
-                    it = new ForwardBinaryTreeIterator(root.left);
+                    it = new ForwardBinaryTreeIterator(this.root.left);
                 }
             }
-
-            public IEnclosure current
+            public IEnclosure MoveNext()
             {
-                get
+                if (state == 0) return null;
+                else if (state == 1)
                 {
-                    if (state != 2)
-                        return it.current;
-                    else 
-                        return actual.value;
-                }
-            }
+                    IEnclosure toCheck = it.MoveNext();
+                    if (toCheck != null) return toCheck;
 
-            public void MoveNext()
-            {
-                if (!HasMore()) throw new NullReferenceException();
-
-                if (state == 1)
-                {
-                    it.MoveNext();
-                    var tmp = it.current;
-                    if (tmp == null)
-                    {
-                        state = 2;
-                        MoveNext();
-                    }
+                    state = 2;
+                    return MoveNext();
                 }
                 else if (state == 2)
                 {
                     state = 3;
-                    it = new ForwardBinaryTreeIterator(actual.right);
+                    it = new ForwardBinaryTreeIterator(root.right);
+                    return root.value;
                 }
-                else it.MoveNext();
-            }
-
-            public bool HasMore()
-            {
-                return state == 0;
+                else return it.MoveNext();
             }
         }
 
@@ -435,7 +359,7 @@ namespace Collections
         public void Remove(Iterator iter)
         {
             if (root == null) return;
-            IEnclosure value = iter.current;
+            IEnclosure value = iter.MoveNext();
 
             Node? toDelete = getNodeWithValue(root, value);
             if (toDelete == null) return;
