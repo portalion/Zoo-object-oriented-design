@@ -1,6 +1,10 @@
 ﻿using static Zoo.Zoo;
 using Zoo;
 using Collections;
+using System.Xml.Serialization;
+using System.Security.Cryptography;
+using System.Diagnostics;
+using System.Net.Http.Headers;
 
 namespace Collections
 {
@@ -286,6 +290,176 @@ namespace Collections
         public Iterator GetReverseIterator()
         {
             return new ReverseVectorIterator(this);
+        }
+    }
+    
+    class BinaryTree : ICollection
+    {
+        class Node
+        {
+            public Node? parent;
+            public Node? left; 
+            public Node? right;
+            public IEnclosure value;
+            public Node(IEnclosure value, Node? parent = null, Node? left = null, Node? right = null)
+            {
+                this.value = value;
+                this.parent = parent;
+                this.left = left;
+                this.right = right;                
+            }
+        }
+
+        class ForwardBinaryTreeIterator : Iterator
+        {
+            Node? actual;
+            int state;
+            ForwardBinaryTreeIterator? it;
+
+            public ForwardBinaryTreeIterator(Node? root)
+            {
+                actual = root;
+                if (actual == null) state = 0;
+                else
+                {
+                    state = 1;
+                    it = new ForwardBinaryTreeIterator(root.left);
+                }
+            }
+
+            public IEnclosure current
+            {
+                get
+                {
+                    if (state != 2)
+                        return it.current;
+                    else 
+                        return actual.value;
+                }
+            }
+
+            public void MoveNext()
+            {
+                if (!HasMore()) throw new NullReferenceException();
+
+                if (state == 1)
+                {
+                    it.MoveNext();
+                    var tmp = it.current;
+                    if (tmp == null)
+                    {
+                        state = 2;
+                        MoveNext();
+                    }
+                }
+                else if (state == 2)
+                {
+                    state = 3;
+                    it = new ForwardBinaryTreeIterator(actual.right);
+                }
+                else it.MoveNext();
+            }
+
+            public bool HasMore()
+            {
+                return state == 0;
+            }
+        }
+
+        Node? root;
+        public BinaryTree()
+        {
+            root = null;
+        }
+
+        public Iterator GetIterator()
+        {
+            return new ForwardBinaryTreeIterator(root);
+        }
+        public Iterator GetReverseIterator()
+        {
+            return new ForwardBinaryTreeIterator(root);
+        }
+
+        Node? getNodeWithValue(Node? node, IEnclosure value)
+        {
+            if (node == null)
+                return null;
+            if (node.value == value)
+                return node;
+
+            Node? result = getNodeWithValue(node.left, value);
+            if (result != null) return result;
+            return getNodeWithValue(node.right, value);
+        }
+
+        void deleteFromParent(Node toDelete)
+        {
+            if (toDelete.parent == null)
+            {
+                root = null;
+                return;
+            }
+
+            Node tmp = toDelete.parent;
+            if (tmp.right == toDelete) tmp.right = null;
+            else tmp.left = null;
+        }
+
+        public void Add(IEnclosure value)
+        {
+            if(root == null)
+            {
+                root = new Node(value);
+                return;
+            }
+
+            Node actual = root;
+
+            while (actual.right != null && actual.left != null)
+            {
+                Random randomNumberGenerator = new Random();
+                if (randomNumberGenerator.Next(2) == 1) actual = actual.left;
+                else actual = actual.right;
+            }
+            if (actual.left == null && actual.right == null)
+            {
+                Random randomNumberGenerator = new Random();
+                if (randomNumberGenerator.Next(2) == 1) actual.left = new Node(value, actual);
+                else actual.right = new Node(value, actual);
+            }
+            else if (actual.left == null)
+                actual.left = new Node(value, actual);
+            else actual.right = new Node(value, actual);
+        }
+        public void Remove(Iterator iter)
+        {
+            if (root == null) return;
+            IEnclosure value = iter.current;
+
+            Node? toDelete = getNodeWithValue(root, value);
+            if (toDelete == null) return;
+
+            if (toDelete.parent == null && toDelete.left == null && toDelete.right == null)
+            {
+                root = null;
+                return;
+            }
+
+            Node? toSwap = root;
+            while (toSwap.right != null && toSwap.left != null)
+            {
+                if (toSwap.right != null) toSwap = toSwap.right;
+                else toSwap = toSwap.left;
+            }
+            var parent = toSwap.parent;
+            toSwap.parent = toDelete.parent;
+            toSwap.left = toDelete.left;
+            toSwap.right = toDelete.right;
+            toDelete.right = null;
+            toDelete.left = null;
+            toDelete.parent = parent;
+            deleteFromParent(toDelete);
         }
     }
 }
