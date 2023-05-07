@@ -322,7 +322,7 @@ namespace Zoo
                 VisitorAdapters.Add(visitor.Key, 
                     new SecondRepresentation.VisitorAdapter(visitor.Value, employees, species, enclosures, animals));
 
-            BinaryTree enclosuresCollection = new BinaryTree();
+            BinaryTree<IEnclosure> enclosuresCollection = new BinaryTree<IEnclosure>();
             foreach (var enclosure in EnclosureAdapters.Values)
                 enclosuresCollection.Add(enclosure);
 

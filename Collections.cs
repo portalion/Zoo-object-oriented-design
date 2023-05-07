@@ -227,15 +227,15 @@ namespace Collections
         }
     }
     
-    class BinaryTree : ICollection<IEnclosure>
+    class BinaryTree<T> : ICollection<T>
     {
         class Node
         {
             public Node? parent;
             public Node? left; 
             public Node? right;
-            public IEnclosure value;
-            public Node(IEnclosure value, Node? parent = null, Node? left = null, Node? right = null)
+            public T value;
+            public Node(T value, Node? parent = null, Node? left = null, Node? right = null)
             {
                 this.value = value;
                 this.parent = parent;
@@ -244,7 +244,7 @@ namespace Collections
             }
         }
 
-        class ForwardBinaryTreeIterator : Iterator<IEnclosure>
+        class ForwardBinaryTreeIterator : Iterator<T>
         {
             Node? root;
             int state;
@@ -260,12 +260,12 @@ namespace Collections
                     it = new ForwardBinaryTreeIterator(this.root.left);
                 }
             }
-            public IEnclosure? MoveNext()
+            public T? MoveNext()
             {
-                if (state == 0) return null;
+                if (state == 0) return default;
                 else if (state == 1)
                 {
-                    IEnclosure? toCheck = it?.MoveNext();
+                    T? toCheck = it == null ? default : it.MoveNext();
                     if (toCheck != null) return toCheck;
 
                     state = 2;
@@ -275,12 +275,12 @@ namespace Collections
                 {
                     state = 3;
                     it = new ForwardBinaryTreeIterator(root?.right);
-                    return root?.value;
+                    return root == null ? default : root.value;
                 }
-                else return it?.MoveNext();
+                else return it == null ? default : it.MoveNext();
             }
         }
-        class ReverseBinaryTreeIterator : Iterator<IEnclosure>
+        class ReverseBinaryTreeIterator : Iterator<T>
         {
             Node? root;
             int state;
@@ -295,12 +295,12 @@ namespace Collections
                     it = new ReverseBinaryTreeIterator(this.root.right);
                 }
             }
-            public IEnclosure? MoveNext()
+            public T? MoveNext()
             {
-                if (state == 0) return null;
+                if (state == 0) return default;
                 else if (state == 1)
                 {
-                    IEnclosure? toCheck = it?.MoveNext();
+                    T? toCheck = it == null ? default : it.MoveNext();
                     if (toCheck != null) return toCheck;
 
                     state = 2;
@@ -310,9 +310,9 @@ namespace Collections
                 {
                     state = 3;
                     it = new ReverseBinaryTreeIterator(root?.left);
-                    return root?.value;
+                    return root == null ? default : root.value;
                 }
-                else return it?.MoveNext();
+                else return it == null ? default : it.MoveNext();
             }
         }
 
@@ -322,20 +322,20 @@ namespace Collections
             root = null;
         }
 
-        public Iterator<IEnclosure> GetIterator()
+        public Iterator<T> GetIterator()
         {
             return new ForwardBinaryTreeIterator(root);
         }
-        public Iterator<IEnclosure> GetReverseIterator()
+        public Iterator<T> GetReverseIterator()
         {
             return new ReverseBinaryTreeIterator(root);
         }
 
-        Node? getNodeWithValue(Node? node, IEnclosure value)
+        Node? getNodeWithValue(Node? node, T value)
         {
             if (node == null)
                 return null;
-            if (node.value == value)
+            if (node.value.Equals(value))
                 return node;
 
             Node? result = getNodeWithValue(node.left, value);
@@ -356,7 +356,7 @@ namespace Collections
             else tmp.left = null;
         }
 
-        public void Add(IEnclosure value)
+        public void Add(T value)
         {
             if(root == null)
             {
@@ -382,10 +382,10 @@ namespace Collections
                 actual.left = new Node(value, actual);
             else actual.right = new Node(value, actual);
         }
-        public void Remove(Iterator<IEnclosure> iter)
+        public void Remove(Iterator<T> iter)
         {
             if (root == null) return;
-            IEnclosure? value = iter.MoveNext();
+            T? value = iter.MoveNext();
 
             if (value == null) return;
 
