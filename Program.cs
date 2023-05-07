@@ -1,6 +1,4 @@
 ﻿using Collections;
-using System;
-using System.Security.Claims;
 using System.Text;
 
 namespace Zoo
@@ -55,6 +53,16 @@ namespace Zoo
             ["Ryker Polly"] = ("Ryker", "Polly", new string[] { "Break" })
         };
 
+        public static void PrintObject(object obj)
+        {
+            if (obj is IEnclosure) PrintEnclosure((IEnclosure)obj);
+            else if (obj is IEmployee) PrintEmployee((IEmployee)obj);
+            else if (obj is IAnimal) PrintAnimal((IAnimal)obj);
+            else if (obj is ISpecies) PrintSpecies((ISpecies)obj);
+            else if (obj is IVisitor) PrintVisitor((IVisitor)obj);
+            else throw new InvalidOperationException();
+        }
+
         public static void PrintEnclosure(IEnclosure enclosure)
         {
             StringBuilder sb = new StringBuilder();
@@ -94,7 +102,7 @@ namespace Zoo
             Console.WriteLine(sb);
         }
 
-        class Pred : Predicate
+        class Pred : Collections.Predicate<IEnclosure>
         {
             public bool fulfills(IEnclosure e)
             {
@@ -107,7 +115,7 @@ namespace Zoo
             }
         }
 
-        static void Task2(ICollection enclosures)
+        static void Task2(Collections.ICollection<IEnclosure> enclosures)
         {
             Algorithms.Print(enclosures.GetReverseIterator(), new Pred());
             Console.WriteLine();
@@ -204,7 +212,7 @@ namespace Zoo
             foreach (var employee in employees)EmployeeAdapters.Add(employee.Key, new MainRepresentation.EmployeeAdapter(employee.Value));
             foreach (var visitor in visitors) VisitorAdapters.Add(visitor.Key, new MainRepresentation.VisitorAdapter(visitor.Value));
 
-            DoubleLinkList enclosuresCollection = new DoubleLinkList();
+            DoubleLinkList<IEnclosure> enclosuresCollection = new DoubleLinkList<IEnclosure>();
             foreach (var enclosure in EnclosureAdapters.Values)
                 enclosuresCollection.Add(enclosure);
 

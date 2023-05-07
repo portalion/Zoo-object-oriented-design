@@ -8,105 +8,107 @@ using System.Net.Http.Headers;
 
 namespace Collections
 {
-    interface Iterator
+    interface Iterator<T>
     {
-        IEnclosure? MoveNext();
+        T? MoveNext();
     }
-    interface ICollection
+    interface ICollection<T>
     {
-        void Add(IEnclosure toAdd);
-        void Remove(Iterator toRemove);
-        Iterator GetIterator();
-        Iterator GetReverseIterator();
+        void Add(T toAdd);
+        void Remove(Iterator<T> toRemove);
+        Iterator<T> GetIterator();
+        Iterator<T> GetReverseIterator();
     }
-    interface Predicate 
+    interface Predicate <T>
     {
-        bool fulfills(IEnclosure toCheck);
+        bool fulfills(T toCheck);
     }
-    interface Function
+    interface Function<T>
     {
-        void operations(IEnclosure toCheck);
+        void operations(T toCheck);
     }
 
     static class Algorithms
     {
-        static public IEnclosure? Find(Iterator toSearch, Predicate predicate)
+        static public T? Find<T>(Iterator<T> toSearch, Predicate<T> predicate)
         {
-            IEnclosure? toCheck;
+            T? toCheck;
             while ((toCheck = toSearch.MoveNext()) != null)
             {
                 if (predicate.fulfills(toCheck)) return toCheck;
             }
-            return null;
+            return default;
         }
-        static public void Print(Iterator toSearch, Predicate predicate)
+        static public void Print<T>(Iterator<T> toSearch, Predicate<T> predicate)
         {
-            IEnclosure? toCheck;
+            T? toCheck;
             while ((toCheck = toSearch.MoveNext()) != null)
             {
                 if (predicate.fulfills(toCheck))
-                    PrintEnclosure(toCheck);
+                    PrintObject(toCheck);
             }
         }
-        static public void ForEach(Iterator toSearch, Function function)
+        static public void ForEach<T>(Iterator<T> toSearch, Function<T> function)
         {
-            IEnclosure? toCheck;
+            T? toCheck;
             while ((toCheck = toSearch.MoveNext()) != null)
                 function.operations(toCheck);
         }
-        static public int CountIf(Iterator toSearch, Predicate predicate)
+        static public int CountIf<T>(Iterator<T> toSearch, Predicate<T> predicate)
         {
             int counter = 0;
-            IEnclosure? toCheck;
+            T? toCheck;
             while ((toCheck = toSearch.MoveNext()) != null)
                 if (predicate.fulfills(toCheck)) counter++;
             return counter;        
         }
     }  
     
-    class DoubleLinkList : ICollection
+    class DoubleLinkList<T> : ICollection<T>
     {
         class Node
         {
-            public IEnclosure? value { get; set; }
+            public T? value { get; set; }
             public Node? next { get; set; }
             public Node? prev { get; set; }
-            public Node(IEnclosure? value = null, Node? prev = null, Node? next = null)
+            public Node(T? value = default, Node? prev = null, Node? next = null)
             {
                 this.value = value;
                 this.prev = prev;
                 this.next = next;
             }
         }
-        class ForwardDoubleLinkListIterator : Iterator
+        class ForwardDoubleLinkListIterator : Iterator<T>
         {
             Node? actual;
             public ForwardDoubleLinkListIterator(Node? ListStart)
             {
-                actual = new Node(null, null, ListStart);
+                actual = new Node(default, null, ListStart);
             }
-            public IEnclosure? MoveNext()
+            public T? MoveNext()
             {
                 actual = actual?.next;
-                return actual?.value;
+                if (actual == null) return default;
+                return actual.value;
             }
         }
-        class ReverseDoubleLinkListIterator : Iterator
+        class ReverseDoubleLinkListIterator : Iterator<T>
         {
             Node? actual;
             public ReverseDoubleLinkListIterator(Node? ListEnd)
             {
-                actual = new Node(null, ListEnd, null);
+                actual = new Node(default, ListEnd, null);
             }
-            public IEnclosure? MoveNext()
+            public T? MoveNext()
             {
                 actual = actual?.prev;
-                return actual?.value;
+                if (actual == null) return default;
+                return actual.value;
             }
         }
         Node? Head = null;
         Node? Tail = null;
-        public void Add(IEnclosure toAdd) 
+        public void Add(T toAdd) 
         {
             if (Head == null)
             {
@@ -123,34 +125,34 @@ namespace Collections
             Head = new Node(toAdd, null, Head);
             Head.next.prev = Head;
         }
-        public void Remove(Iterator val) 
+        public void Remove(Iterator<T> val) 
         {
-            IEnclosure? toRemove = val.MoveNext();
+            T? toRemove = val.MoveNext();
             if (toRemove == null) return;
             Node? actual = Head;
             if (actual == null) return;
-            while (actual.next != null && actual.value != toRemove) actual = actual.next;
+            while (actual.next != null && !actual.value.Equals(toRemove)) actual = actual.next;
 
-            if (actual.value != toRemove) return;
+            if (!actual.value.Equals(toRemove)) return;
 
             if (actual.prev == null) Head = actual.next;
             else actual.prev.next = actual.next;
             if (actual.next == null) Tail = actual.prev;
             else actual.next.prev = actual.prev;
         }
-        public Iterator GetIterator()
+        public Iterator<T> GetIterator()
         {
             return new ForwardDoubleLinkListIterator(Head);
         }
-        public Iterator GetReverseIterator()
+        public Iterator<T> GetReverseIterator()
         {
             return new ReverseDoubleLinkListIterator(Tail);
         }
     }
 
-    class Vector : ICollection
+    class Vector : ICollection<IEnclosure>
     {
-        class ForwardVectorIterator : Iterator
+        class ForwardVectorIterator : Iterator<IEnclosure>
         {
             int index;
             Vector vector;
@@ -164,7 +166,7 @@ namespace Collections
                 return index == vector.size ? null : vector.values[++index];
             }
         }
-        class ReverseVectorIterator : Iterator
+        class ReverseVectorIterator : Iterator<IEnclosure>
         {
             int index;
             Vector vector;
@@ -201,7 +203,7 @@ namespace Collections
             values[size++] = value;
         }
 
-        public void Remove(Iterator iterator)
+        public void Remove(Iterator<IEnclosure> iterator)
         {
             IEnclosure? toDeleteEnclosure = iterator.MoveNext();
             if (toDeleteEnclosure == null) return;
@@ -215,17 +217,17 @@ namespace Collections
             values[size--] = null;
         }
 
-        public Iterator GetIterator()
+        public Iterator<IEnclosure> GetIterator()
         {
             return new ForwardVectorIterator(this);
         }
-        public Iterator GetReverseIterator()
+        public Iterator<IEnclosure> GetReverseIterator()
         {
             return new ReverseVectorIterator(this);
         }
     }
     
-    class BinaryTree : ICollection
+    class BinaryTree : ICollection<IEnclosure>
     {
         class Node
         {
@@ -242,7 +244,7 @@ namespace Collections
             }
         }
 
-        class ForwardBinaryTreeIterator : Iterator
+        class ForwardBinaryTreeIterator : Iterator<IEnclosure>
         {
             Node? root;
             int state;
@@ -278,7 +280,7 @@ namespace Collections
                 else return it?.MoveNext();
             }
         }
-        class ReverseBinaryTreeIterator : Iterator
+        class ReverseBinaryTreeIterator : Iterator<IEnclosure>
         {
             Node? root;
             int state;
@@ -320,11 +322,11 @@ namespace Collections
             root = null;
         }
 
-        public Iterator GetIterator()
+        public Iterator<IEnclosure> GetIterator()
         {
             return new ForwardBinaryTreeIterator(root);
         }
-        public Iterator GetReverseIterator()
+        public Iterator<IEnclosure> GetReverseIterator()
         {
             return new ReverseBinaryTreeIterator(root);
         }
@@ -380,7 +382,7 @@ namespace Collections
                 actual.left = new Node(value, actual);
             else actual.right = new Node(value, actual);
         }
-        public void Remove(Iterator iter)
+        public void Remove(Iterator<IEnclosure> iter)
         {
             if (root == null) return;
             IEnclosure? value = iter.MoveNext();
