@@ -465,7 +465,7 @@ namespace Zoo
                 VisitorAdapters.Add(visitor.Key,
                     new ThirdRepresentation.VisitorAdapter(visitor.Value, employees, species, enclosures, animals));
 
-            Vector enclosuresCollection = new Vector();
+            Vector<IEnclosure> enclosuresCollection = new Vector<IEnclosure>();
             foreach (var enclosure in EnclosureAdapters.Values)
                 enclosuresCollection.Add(enclosure);
 

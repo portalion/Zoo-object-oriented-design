@@ -150,52 +150,52 @@ namespace Collections
         }
     }
 
-    class Vector : ICollection<IEnclosure>
+    class Vector<T> : ICollection<T>
     {
-        class ForwardVectorIterator : Iterator<IEnclosure>
+        class ForwardVectorIterator : Iterator<T>
         {
             int index;
-            Vector vector;
-            public ForwardVectorIterator(Vector vector)
+            Vector<T> vector;
+            public ForwardVectorIterator(Vector<T> vector)
             {
                 index = -1;
                 this.vector = vector;
             }
-            public IEnclosure? MoveNext()
+            public T? MoveNext()
             {
-                return index == vector.size ? null : vector.values[++index];
+                return index == vector.size ? default : vector.values[++index];
             }
         }
-        class ReverseVectorIterator : Iterator<IEnclosure>
+        class ReverseVectorIterator : Iterator<T>
         {
             int index;
-            Vector vector;
-            public ReverseVectorIterator(Vector vector)
+            Vector<T> vector;
+            public ReverseVectorIterator(Vector<T> vector)
             {
                 index = vector.size;
                 this.vector = vector;
             }
 
-            public IEnclosure? MoveNext()
+            public T? MoveNext()
             {
-                return index == 0 ? null : vector.values[--index];
+                return index == 0 ? default : vector.values[--index];
             }
         }
         int size;
-        IEnclosure?[] values;
+        T?[] values;
         public Vector(int size = 2)
         {
             if (size < 2) throw new ArgumentException("size");
-            values = new IEnclosure?[size];
+            values = new T?[size];
             this.size = 0;
         }
 
-        public void Add(IEnclosure value)
+        public void Add(T value)
         {
             if(values.Length == size)
             {
                 var tmp = values;
-                values = new IEnclosure?[tmp.Length * 2];
+                values = new T?[tmp.Length * 2];
                 for (int i = 0; i < size; i++)
                     values[i] = tmp[i];
             }
@@ -203,25 +203,25 @@ namespace Collections
             values[size++] = value;
         }
 
-        public void Remove(Iterator<IEnclosure> iterator)
+        public void Remove(Iterator<T> iterator)
         {
-            IEnclosure? toDeleteEnclosure = iterator.MoveNext();
+            T? toDeleteEnclosure = iterator.MoveNext();
             if (toDeleteEnclosure == null) return;
             int toDelete = 0;
             for (toDelete = 0; toDelete < size; toDelete++)
-                if (values[toDelete] == toDeleteEnclosure) break;
+                if (values[toDelete].Equals(toDeleteEnclosure)) break;
 
             for (int i = toDelete; i < size - 1; i++)
                 values[i] = values[i + 1];
 
-            values[size--] = null;
+            values[size--] = default;
         }
 
-        public Iterator<IEnclosure> GetIterator()
+        public Iterator<T> GetIterator()
         {
             return new ForwardVectorIterator(this);
         }
-        public Iterator<IEnclosure> GetReverseIterator()
+        public Iterator<T> GetReverseIterator()
         {
             return new ReverseVectorIterator(this);
         }
