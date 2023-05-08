@@ -53,6 +53,24 @@ namespace Zoo
             ["Ryker Polly"] = ("Ryker", "Polly", new string[] { "Break" })
         };
 
+        static Dictionary<string, IEnclosure> MainRepresentationEnclosures = new Dictionary<string, IEnclosure>();
+        static Dictionary<string, IAnimal> MainRepresentationAnimals = new Dictionary<string, IAnimal>();
+        static Dictionary<string, ISpecies> MainRepresentationSpecies = new Dictionary<string, ISpecies>();
+        static Dictionary<string, IEmployee> MainRepresentationEmployees = new Dictionary<string, IEmployee>();
+        static Dictionary<string, IVisitor> MainRepresentationVisitors = new Dictionary<string, IVisitor>();
+
+        static Dictionary<string, IEnclosure> SecondRepresentationEnclosures = new Dictionary<string, IEnclosure>();
+        static Dictionary<string, IAnimal> SecondRepresentationAnimals = new Dictionary<string, IAnimal>();
+        static Dictionary<string, ISpecies> SecondRepresentationSpecies = new Dictionary<string, ISpecies>();
+        static Dictionary<string, IEmployee> SecondRepresentationEmployees = new Dictionary<string, IEmployee>();
+        static Dictionary<string, IVisitor> SecondRepresentationVisitors = new Dictionary<string, IVisitor>();
+
+        static Dictionary<int, IEnclosure> ThirdRepresentationEnclosures = new Dictionary<int, IEnclosure>();
+        static Dictionary<int, IAnimal> ThirdRepresentationAnimals = new Dictionary<int, IAnimal>();
+        static Dictionary<int, ISpecies> ThirdRepresentationSpecies = new Dictionary<int, ISpecies>();
+        static Dictionary<int, IEmployee> ThirdRepresentationEmployees = new Dictionary<int, IEmployee>();
+        static Dictionary<int, IVisitor> ThirdRepresentationVisitors = new Dictionary<int, IVisitor>();
+
         public static void PrintObject(object obj)
         {
             if (obj is IEnclosure) PrintEnclosure((IEnclosure)obj);
@@ -70,13 +88,13 @@ namespace Zoo
             sb.Append($"], {enclosure.employee.name} {enclosure.employee.surname}");
             Console.WriteLine(sb);
         }
-        public static void PrintAnimal(IAnimal animal) 
+        public static void PrintAnimal(IAnimal animal)
         {
             StringBuilder sb = new StringBuilder();
             sb.Append($"{animal.name}, {animal.age}, {animal.species.name}");
             Console.WriteLine(sb);
         }
-        public static void PrintSpecies(ISpecies species) 
+        public static void PrintSpecies(ISpecies species)
         {
             StringBuilder sb = new StringBuilder();
             sb.Append($"{species.name}, [");
@@ -84,7 +102,7 @@ namespace Zoo
             sb.Append($"]");
             Console.WriteLine(sb);
         }
-        public static void PrintEmployee(IEmployee employee) 
+        public static void PrintEmployee(IEmployee employee)
         {
             StringBuilder sb = new StringBuilder();
             sb.Append($"{employee.name}, {employee.surname}, {employee.age}, [");
@@ -92,7 +110,7 @@ namespace Zoo
             sb.Append($"]");
             Console.WriteLine(sb);
         }
-        public static void PrintVisitor(IVisitor visitor) 
+        public static void PrintVisitor(IVisitor visitor)
         {
             StringBuilder sb = new StringBuilder();
             sb.Append($"{visitor.name}, {visitor.surname}, [");
@@ -101,7 +119,7 @@ namespace Zoo
             Console.WriteLine(sb);
         }
 
-        static void MainFormatOperations()
+        static void CreateMainRepresentationObjects()
         {
             Dictionary<string, MainRepresentation.Enclosure> enclosures = new Dictionary<string, MainRepresentation.Enclosure>();
             Dictionary<string, MainRepresentation.Animal> animals = new Dictionary<string, MainRepresentation.Animal>();
@@ -154,51 +172,16 @@ namespace Zoo
                 foreach (var enclosure in employee.Value.enclosures)
                     employees[employee.Key].enclosures.Add(enclosures[enclosure]);
 
-            //Printing
-            Console.WriteLine("Enclosures: ");
-            foreach (var enclosure in enclosures.Values)
-                PrintEnclosure(new MainRepresentation.EnclosureAdapter(enclosure));
-            Console.WriteLine();
-            Console.WriteLine("Animals: ");
-            foreach (var animal in animals.Values)
-                PrintAnimal(new MainRepresentation.AnimalAdapter(animal));
-            Console.WriteLine();
-            Console.WriteLine("Species: ");
-            foreach (var specie in species.Values) 
-                PrintSpecies(new MainRepresentation.SpeciesAdapter(specie));
-            Console.WriteLine();
-            Console.WriteLine("Employees: ");
-            foreach (var employee in employees.Values)
-                PrintEmployee(new MainRepresentation.EmployeeAdapter(employee));
-            Console.WriteLine();
-            Console.WriteLine("Visitors: ");
-            foreach (var visitor in visitors.Values)
-                PrintVisitor(new MainRepresentation.VisitorAdapter(visitor));
-            Console.WriteLine();
-
             //Adapters and task2
-            Dictionary<string, IEnclosure> EnclosureAdapters = new Dictionary<string, IEnclosure>();
-            Dictionary<string, IAnimal> AnimalAdapters = new Dictionary<string, IAnimal>();
-            Dictionary<string, ISpecies> SpeciesAdapters = new Dictionary<string, ISpecies>();
-            Dictionary<string, IEmployee> EmployeeAdapters = new Dictionary<string, IEmployee>();
-            Dictionary<string, IVisitor> VisitorAdapters = new Dictionary<string, IVisitor>();
-
             foreach (var enclosure in enclosures)
-                EnclosureAdapters.Add(enclosure.Key, new MainRepresentation.EnclosureAdapter(enclosure.Value));
+                MainRepresentationEnclosures.Add(enclosure.Key, new MainRepresentation.EnclosureAdapter(enclosure.Value));
             foreach (var animal in animals)
-                AnimalAdapters.Add(animal.Key, new MainRepresentation.AnimalAdapter(animal.Value));
-            foreach (var specie in species)SpeciesAdapters.Add(specie.Key, new MainRepresentation.SpeciesAdapter(specie.Value));
-            foreach (var employee in employees)EmployeeAdapters.Add(employee.Key, new MainRepresentation.EmployeeAdapter(employee.Value));
-            foreach (var visitor in visitors) VisitorAdapters.Add(visitor.Key, new MainRepresentation.VisitorAdapter(visitor.Value));
-
-            DoubleLinkList<IEnclosure> enclosuresCollection = new DoubleLinkList<IEnclosure>();
-            foreach (var enclosure in EnclosureAdapters.Values)
-                enclosuresCollection.Add(enclosure);
-
-            Task2(enclosuresCollection);
-            Console.WriteLine();
+                MainRepresentationAnimals.Add(animal.Key, new MainRepresentation.AnimalAdapter(animal.Value));
+            foreach (var specie in species)MainRepresentationSpecies.Add(specie.Key, new MainRepresentation.SpeciesAdapter(specie.Value));
+            foreach (var employee in employees)MainRepresentationEmployees.Add(employee.Key, new MainRepresentation.EmployeeAdapter(employee.Value));
+            foreach (var visitor in visitors) MainRepresentationVisitors.Add(visitor.Key, new MainRepresentation.VisitorAdapter(visitor.Value));
         }
-        static void SecondFormatOperations() 
+        static void CreateSecondRepresentationObjects() 
         {
             Dictionary<string, SecondRepresentation.Enclosure> enclosures = new Dictionary<string, SecondRepresentation.Enclosure>();
             Dictionary<string, SecondRepresentation.Animal> animals = new Dictionary<string, SecondRepresentation.Animal>();
@@ -251,65 +234,25 @@ namespace Zoo
                 visitors[keys.Key] = new SecondRepresentation.Visitor(sb.ToString());
             }
 
-
-            //Printing
-            Console.WriteLine("Enclosures: ");
-            foreach (var enclosure in enclosures.Values)
-                PrintEnclosure(new SecondRepresentation.EnclosureAdapter(enclosure, 
-                    species, employees, enclosures, animals));
-            Console.WriteLine();
-            Console.WriteLine("Animals: ");
-            foreach (var animal in animals.Values)
-                PrintAnimal(new SecondRepresentation.AnimalAdapter(animal, species));
-            Console.WriteLine();
-            Console.WriteLine("Species: ");
-            foreach (var specie in species.Values)
-                PrintSpecies(new SecondRepresentation.SpeciesAdapter(specie, species));
-            Console.WriteLine();
-            Console.WriteLine("Employees: ");
-            foreach (var employee in employees.Values)
-                PrintEmployee(new SecondRepresentation.EmployeeAdapter(
-                    employee, species, employees, enclosures, animals));
-            Console.WriteLine();
-            Console.WriteLine("Visitors: ");
-            foreach (var visitor in visitors.Values)
-                PrintVisitor(new SecondRepresentation.VisitorAdapter(visitor,
-                    employees, species, enclosures, animals));
-            Console.WriteLine();
-
             //Adapters and task2
-            Dictionary<string, IEnclosure> EnclosureAdapters = new Dictionary<string, IEnclosure>();
-            Dictionary<string, IAnimal> AnimalAdapters = new Dictionary<string, IAnimal>();
-            Dictionary<string, ISpecies> SpeciesAdapters = new Dictionary<string, ISpecies>();
-            Dictionary<string, IEmployee> EmployeeAdapters = new Dictionary<string, IEmployee>();
-            Dictionary<string, IVisitor> VisitorAdapters = new Dictionary<string, IVisitor>();
-
             foreach (var enclosure in enclosures)
-                EnclosureAdapters.Add(enclosure.Key, 
+                SecondRepresentationEnclosures.Add(enclosure.Key, 
                     new SecondRepresentation.EnclosureAdapter(
                         enclosure.Value, species, employees, enclosures, animals));
             foreach (var animal in animals)
-                AnimalAdapters.Add(animal.Key, 
+                SecondRepresentationAnimals.Add(animal.Key, 
                     new SecondRepresentation.AnimalAdapter(animal.Value, species));
             foreach (var specie in species) 
-                SpeciesAdapters.Add(specie.Key, 
+                SecondRepresentationSpecies.Add(specie.Key, 
                     new SecondRepresentation.SpeciesAdapter(specie.Value, species));
             foreach (var employee in employees) 
-                EmployeeAdapters.Add(employee.Key, 
+                SecondRepresentationEmployees.Add(employee.Key, 
                     new SecondRepresentation.EmployeeAdapter(employee.Value, species, employees, enclosures, animals));
             foreach (var visitor in visitors) 
-                VisitorAdapters.Add(visitor.Key, 
+                SecondRepresentationVisitors.Add(visitor.Key, 
                     new SecondRepresentation.VisitorAdapter(visitor.Value, employees, species, enclosures, animals));
-
-            BinaryTree<IEnclosure> enclosuresCollection = new BinaryTree<IEnclosure>();
-            foreach (var enclosure in EnclosureAdapters.Values)
-                enclosuresCollection.Add(enclosure);
-
-            Task2(enclosuresCollection);
-            Console.WriteLine();
-
         }
-        static void ThirdFormatOperations() 
+        static void CreateThirdRepresentationObjects() 
         {
             Dictionary<int, ThirdRepresentation.Enclosure> enclosures = new Dictionary<int, ThirdRepresentation.Enclosure>();
             Dictionary<int, ThirdRepresentation.Animal> animals = new Dictionary<int, ThirdRepresentation.Animal>();
@@ -389,72 +332,36 @@ namespace Zoo
             }
 
             foreach (var enclosure in enclosures)
-                enclosure.Value.data["employee"] = employees.Where(emp => 
+                enclosure.Value.data["employee"] = employees.Where(emp =>
                 (emp.Value.data["name"] + " " + emp.Value.data["surname"]) == enclosure.Value.data["employee"])
                     .First().Key.ToString();
 
-
-            //Printing
-            Console.WriteLine("Enclosures: ");
-            foreach (var enclosure in enclosures.Values)
-                PrintEnclosure(new ThirdRepresentation.EnclosureAdapter(enclosure,
-                    species, employees, enclosures, animals));
-            Console.WriteLine();
-            Console.WriteLine("Animals: ");
-            foreach (var animal in animals.Values)
-                PrintAnimal(new ThirdRepresentation.AnimalAdapter(animal, species));
-            Console.WriteLine();
-            Console.WriteLine("Species: ");
-            foreach (var specie in species.Values)
-                PrintSpecies(new ThirdRepresentation.SpeciesAdapter(specie, species));
-            Console.WriteLine();
-            Console.WriteLine("Employees: ");
-            foreach (var employee in employees.Values)
-                PrintEmployee(new ThirdRepresentation.EmployeeAdapter(
-                    employee, species, employees, enclosures, animals));
-            Console.WriteLine();
-            Console.WriteLine("Visitors: ");
-            foreach (var visitor in visitors.Values)
-                PrintVisitor(new ThirdRepresentation.VisitorAdapter(visitor,
-                    employees, species, enclosures, animals));
-            Console.WriteLine();
-
-
-            //Adapters and task2
-            Dictionary<int, IEnclosure> EnclosureAdapters = new Dictionary<int, IEnclosure>();
-            Dictionary<int, IAnimal> AnimalAdapters = new Dictionary<int, IAnimal>();
-            Dictionary<int, ISpecies> SpeciesAdapters = new Dictionary<int, ISpecies>();
-            Dictionary<int, IEmployee> EmployeeAdapters = new Dictionary<int, IEmployee>();
-            Dictionary<int, IVisitor> VisitorAdapters = new Dictionary<int, IVisitor>();
-
+            //Adapters
             foreach (var enclosure in enclosures)
-                EnclosureAdapters.Add(enclosure.Key,
+                ThirdRepresentationEnclosures.Add(enclosure.Key,
                     new ThirdRepresentation.EnclosureAdapter(
                         enclosure.Value, species, employees, enclosures, animals));
             foreach (var animal in animals)
-                AnimalAdapters.Add(animal.Key,
+                ThirdRepresentationAnimals.Add(animal.Key,
                     new ThirdRepresentation.AnimalAdapter(animal.Value, species));
             foreach (var specie in species)
-                SpeciesAdapters.Add(specie.Key,
+                ThirdRepresentationSpecies.Add(specie.Key,
                     new ThirdRepresentation.SpeciesAdapter(specie.Value, species));
             foreach (var employee in employees)
-                EmployeeAdapters.Add(employee.Key,
+                ThirdRepresentationEmployees.Add(employee.Key,
                     new ThirdRepresentation.EmployeeAdapter(employee.Value, species, employees, enclosures, animals));
             foreach (var visitor in visitors)
-                VisitorAdapters.Add(visitor.Key,
+                ThirdRepresentationVisitors.Add(visitor.Key,
                     new ThirdRepresentation.VisitorAdapter(visitor.Value, employees, species, enclosures, animals));
-
-            Vector<IEnclosure> enclosuresCollection = new Vector<IEnclosure>();
-            foreach (var enclosure in EnclosureAdapters.Values)
-                enclosuresCollection.Add(enclosure);
-
-            Task2(enclosuresCollection);
-            Console.WriteLine();
         }
+
         static void Main()
         {
+            CreateMainRepresentationObjects();
+            CreateSecondRepresentationObjects();
+            CreateThirdRepresentationObjects();
             App app = new App();
-            app.start();
+            app.Start();
         }
     }
 }
