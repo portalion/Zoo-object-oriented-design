@@ -62,7 +62,6 @@ namespace Zoo
             else if (obj is IVisitor) PrintVisitor((IVisitor)obj);
             else throw new InvalidOperationException();
         }
-
         public static void PrintEnclosure(IEnclosure enclosure)
         {
             StringBuilder sb = new StringBuilder();
@@ -474,13 +473,8 @@ namespace Zoo
         }
         static void Main()
         {
-            Console.WriteLine("Main representation: ");
-            MainFormatOperations();
-            Console.WriteLine("Second representations: ");
-            SecondFormatOperations();
-            Console.WriteLine("Third representations: ");
-            ThirdFormatOperations();
+            App app = new App();
+            app.start();
         }
-
     }
 }
