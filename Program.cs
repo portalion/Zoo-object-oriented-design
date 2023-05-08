@@ -101,26 +101,6 @@ namespace Zoo
             Console.WriteLine(sb);
         }
 
-        class Pred : Collections.Predicate<IEnclosure>
-        {
-            public bool fulfills(IEnclosure e)
-            {
-                int ageSum = 0;
-                foreach (var animal in e.animals)
-                {
-                    ageSum += animal.age;
-                }
-                return ageSum / e.animals.Count() < 3;
-            }
-        }
-
-        static void Task2(Collections.ICollection<IEnclosure> enclosures)
-        {
-            Algorithms.Print(enclosures.GetReverseIterator(), new Pred());
-            Console.WriteLine();
-            Algorithms.Print(enclosures.GetIterator(), new Pred());
-        }
-
         static void MainFormatOperations()
         {
             Dictionary<string, MainRepresentation.Enclosure> enclosures = new Dictionary<string, MainRepresentation.Enclosure>();
