@@ -77,52 +77,10 @@ namespace Zoo
         public static Dictionary<int, ThirdRepresentation.Species> thspecies = new Dictionary<int, ThirdRepresentation.Species>();
         public static Dictionary<int, ThirdRepresentation.Visitor> thvisitors = new Dictionary<int, ThirdRepresentation.Visitor>();
 
-        public static void PrintObject(object obj)
+        public static void PrintToUser(IEditableByUser obj)
         {
-            if (obj is IEnclosure) PrintEnclosure((IEnclosure)obj);
-            else if (obj is IEmployee) PrintEmployee((IEmployee)obj);
-            else if (obj is IAnimal) PrintAnimal((IAnimal)obj);
-            else if (obj is ISpecies) PrintSpecies((ISpecies)obj);
-            else if (obj is IVisitor) PrintVisitor((IVisitor)obj);
-            else throw new InvalidOperationException();
-        }
-        public static void PrintEnclosure(IEnclosure enclosure)
-        {
-            StringBuilder sb = new StringBuilder();
-            if(enclosure.name != null) sb.Append($"{enclosure.name}, [");
-            sb.AppendJoin(", ", enclosure.animals.Select(animal => animal.name));
-            sb.Append($"], {enclosure.employee?.name} {enclosure.employee?.surname}");
-            Console.WriteLine(sb);
-        }
-        public static void PrintAnimal(IAnimal animal)
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.Append($"{animal.name}, {animal.age}, {animal.species?.name}");
-            Console.WriteLine(sb);
-        }
-        public static void PrintSpecies(ISpecies species)
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.Append($"{species.name}, [");
-            sb.AppendJoin(", ", species.favouriteFoods.Select(specie => specie.name));
-            sb.Append($"]");
-            Console.WriteLine(sb);
-        }
-        public static void PrintEmployee(IEmployee employee)
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.Append($"{employee.name}, {employee.surname}, {employee.age}, [");
-            sb.AppendJoin(", ", employee.enclosures.Select(enclosure => enclosure.name));
-            sb.Append($"]");
-            Console.WriteLine(sb);
-        }
-        public static void PrintVisitor(IVisitor visitor)
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.Append($"{visitor.name}, {visitor.surname}, [");
-            sb.AppendJoin(", ", visitor.visitedEnclosures.Select(enclosure => enclosure.name));
-            sb.Append($"]");
-            Console.WriteLine(sb);
+            foreach(var field in obj.gettersForUsers)
+                Console.WriteLine($"{field.Key}: {field.Value}");
         }
 
         static void CreateMainRepresentationObjects()

@@ -1,34 +1,170 @@
 ﻿namespace Zoo
 {
-    public interface IEnclosure
+    public interface IEnclosure : IEditableByUser
     {
         string name { get; set; }
         IEnumerable<IAnimal> animals { get; }
         IEmployee employee { get; }
+        Dictionary<string, Action<string>> IEditableByUser.settersForUsers
+        { 
+            get
+            {
+                Dictionary<string, Action<string>> result = new Dictionary<string, Action<string>>()
+                {
+                    ["name"] = (string value) => { name = value; }
+                };
+                return result;
+            }
+        }
+        Dictionary<string, Func<string>> IEditableByUser.gettersForUsers 
+        {
+            get
+            {
+                Dictionary<string, Func<string>> result = new Dictionary<string, Func<string>>()
+                {
+                    ["name"] = () => { return name; },
+                    ["employee"] = () => { return $"{employee.name} {employee.surname}"; },
+                    ["animals"] = () =>
+                    {
+                        return String.Join(", ", animals.Select((val) => val.name));
+                    }
+                };
+                return result;
+            } 
+        }
     }
-    public interface IAnimal
+    public interface IAnimal : IEditableByUser
     {
         string name { get; set; }
         int age { get; set; }
         ISpecies species { get; }
+        Dictionary<string, Action<string>> IEditableByUser.settersForUsers
+        {
+            get
+            {
+                Dictionary<string, Action<string>> result = new Dictionary<string, Action<string>>()
+                {
+                    ["name"] = (string value) => { name = value; },
+                    ["age"] = (string value) => { age = int.Parse(value); }
+                };
+                return result;
+            }
+        }
+        Dictionary<string, Func<string>> IEditableByUser.gettersForUsers
+        {
+            get
+            {
+                Dictionary<string, Func<string>> result = new Dictionary<string, Func<string>>()
+                {
+                    ["name"] = () => { return name; },
+                    ["age"] = () => { return age.ToString(); },
+                    ["species"] = () => { return species.name; }
+                };
+                return result;
+            }
+        }
     }
-    public interface IEmployee
+    public interface IEmployee : IEditableByUser
     { 
         string name { get; set; }
         string surname { get; set; }
         int age { get; set; }
         IEnumerable<IEnclosure> enclosures { get; }
+        Dictionary<string, Action<string>> IEditableByUser.settersForUsers
+        {
+            get
+            {
+                Dictionary<string, Action<string>> result = new Dictionary<string, Action<string>>()
+                {
+                    ["name"] = (string value) => { name = value; },
+                    ["surname"] = (string value) => { surname = value; },
+                    ["age"] = (string value) => { age = int.Parse(value); }
+                };
+                return result;
+            }
+        }
+        Dictionary<string, Func<string>> IEditableByUser.gettersForUsers
+        {
+            get
+            {
+                Dictionary<string, Func<string>> result = new Dictionary<string, Func<string>>()
+                {
+                    ["name"] = () => { return name; },
+                    ["surname"] = () => { return surname; },
+                    ["age"] = () => { return age.ToString(); },
+                    ["enclosures"] = () =>
+                    {
+                        return String.Join(", ", enclosures.Select((val) => val.name));
+                    }
+                };
+                return result;
+            }
+        }
     }
-    public interface ISpecies
+    public interface ISpecies : IEditableByUser
     {
         string name { get; set; }
         IEnumerable<ISpecies> favouriteFoods { get; }
+        Dictionary<string, Action<string>> IEditableByUser.settersForUsers
+        {
+            get
+            {
+                Dictionary<string, Action<string>> result = new Dictionary<string, Action<string>>()
+                {
+                    ["name"] = (string value) => { name = value; }
+                };
+                return result;
+            }
+        }
+        Dictionary<string, Func<string>> IEditableByUser.gettersForUsers
+        {
+            get
+            {
+                Dictionary<string, Func<string>> result = new Dictionary<string, Func<string>>()
+                {
+                    ["name"] = () => { return name; },
+                    ["species"] = () =>
+                    {
+                        return String.Join(", ", favouriteFoods.Select((val) => val.name));
+                    }
+                };
+                return result;
+            }
+        }
     }
-    public interface IVisitor
+    public interface IVisitor : IEditableByUser
     {
         string name { get; set; }
         string surname { get; set; }
         IEnumerable<IEnclosure> visitedEnclosures { get; }
+        Dictionary<string, Action<string>> IEditableByUser.settersForUsers
+        {
+            get
+            {
+                Dictionary<string, Action<string>> result = new Dictionary<string, Action<string>>()
+                {
+                    ["name"] = (string value) => { name = value; },
+                    ["surname"] = (string value) => { surname = value; }
+                };
+                return result;
+            }
+        }
+        Dictionary<string, Func<string>> IEditableByUser.gettersForUsers
+        {
+            get
+            {
+                Dictionary<string, Func<string>> result = new Dictionary<string, Func<string>>()
+                {
+                    ["name"] = () => { return name; },
+                    ["surname"] = () => { return surname; },
+                    ["visitedEnclosures"] = () =>
+                    {
+                        return String.Join(", ", visitedEnclosures.Select((val) => val.name));
+                    }
+                };
+                return result;
+            }
+        }
     }
 }
 

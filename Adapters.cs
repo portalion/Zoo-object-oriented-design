@@ -7,7 +7,11 @@ namespace MainRepresentation
         Enclosure adaptee;
         public EnclosureAdapter(Enclosure adaptee) { this.adaptee = adaptee; }
 
-        public string name { get { return adaptee.name; }set { adaptee.name = value; } }
+        public string name 
+        { 
+            get { return adaptee.name; }
+            set { adaptee.name = value; } 
+        }
         public IEmployee employee { get { return new EmployeeAdapter(adaptee.employee); } }
         public IEnumerable<IAnimal> animals
         {

@@ -12,97 +12,8 @@ namespace Zoo
         static Collections.ICollection<IEmployee> employees = new BinaryTree<IEmployee>();
         static Collections.ICollection<IVisitor> visitors = new DoubleLinkList<IVisitor>();
 
-        abstract class Command
-        {
-            public string[] arguments { get; set; }
-            public string type { get; set; }
-
-            public Command(string userLine)
-            {
-                type = userLine.Split(" ")[0];
-                arguments = userLine.Split(" ").Skip(1).ToList().ToArray();
-            }
-            public void execute()
-            {
-                switch (type)
-                {
-                    case "list":
-                        list();
-                        break;
-                    case "find":
-                        find();
-                        break;
-                    case "add":
-                        add();
-                        break;
-                }
-            }
-            public void find()
-            {
-                if (arguments.Length == 1)
-                { 
-                    list(); 
-                    return; 
-                }
-                for(int i = 1; i < arguments.Length; i++)
-                    if (!ValidatePredicate(arguments[i]))
-                    {
-                        Console.WriteLine($"Invalid argument: {arguments[i]}");
-                        return;
-                    }
-                printWithPredicate();
-                Console.WriteLine("Yep we got this");
-            }
-            public void add()
-            {
-                startAdding();
-                while(true)
-                {
-                    var input = Console.ReadLine();
-                    if(input == "EXIT")
-                    {
-                        Console.WriteLine($"[{arguments[1]} creation abandoned]");
-                        break;
-                    }
-                    else if(input == "DONE")
-                    {
-                        Console.WriteLine($"[{arguments[1]} created]");
-                        Add();
-                        break;
-                    }
-                    if (!input.Contains("="))
-                    {
-                        Console.WriteLine("Specify field and value");
-                        continue;
-                    }
-                    if(!ValidatePredicate(input))
-                    {
-                        Console.WriteLine("Bad argument");
-                        continue;
-                    }
-                    performOperation(input);
-                }
-            }
-            public abstract void startAdding();
-            public abstract void Add();
-            public abstract void performOperation(string operation);
-            public abstract bool ValidatePredicate(string arg);
-            public abstract void printWithPredicate();
-            public abstract void list();
-            public static Command GetCommand(string entity, string val)
-            {
-                switch(entity.ToLower())
-                {
-                    case "enclosure": return new EnclosureCommand(val);
-                    case "animal": return new AnimalCommand(val);
-                    case "employee": return new EmployeeCommand(val);
-                    case "visitor": return new VisitorCommand(val);
-                    case "species": return new SpeciesCommand(val);
-                }
-                throw new ArgumentException();
-            }
-        }
-        class EnclosureCommand : Command
+        
+        public class EnclosureCommand : Command
         {
             public EnclosureCommand(string userLine): base(userLine)
             {
@@ -195,7 +106,7 @@ namespace Zoo
                 }
             }
         }
-        class AnimalCommand : Command
+        public class AnimalCommand : Command
         {
             public AnimalCommand(string userLine) : base(userLine)
             {
@@ -291,7 +202,7 @@ namespace Zoo
                 }
             }
         }
-        class VisitorCommand : Command
+        public class VisitorCommand : Command
         {
             public VisitorCommand(string userLine) : base(userLine)
             {
@@ -385,7 +296,7 @@ namespace Zoo
                 }
             }
         }
-        class EmployeeCommand : Command
+        public class EmployeeCommand : Command
         {
             public EmployeeCommand(string userLine) : base(userLine)
             {
@@ -484,7 +395,7 @@ namespace Zoo
                 }
             }
         }
-        class SpeciesCommand : Command
+        public class SpeciesCommand : Command
         {
             public SpeciesCommand(string userLine) : base(userLine)
             {
