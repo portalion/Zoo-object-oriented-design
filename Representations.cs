@@ -2,32 +2,32 @@
 {
     public interface IEnclosure
     {
-        string name { get; }
+        string name { get; set; }
         IEnumerable<IAnimal> animals { get; }
         IEmployee employee { get; }
     }
     public interface IAnimal
     {
-        string name { get; }
-        int age { get; }
+        string name { get; set; }
+        int age { get; set; }
         ISpecies species { get; }
     }
     public interface IEmployee
     { 
-        string name { get; }
-        string surname { get; }
-        int age { get; }
+        string name { get; set; }
+        string surname { get; set; }
+        int age { get; set; }
         IEnumerable<IEnclosure> enclosures { get; }
     }
     public interface ISpecies
     {
-        string name { get; }
+        string name { get; set; }
         IEnumerable<ISpecies> favouriteFoods { get; }
     }
     public interface IVisitor
     {
-        string name { get; }
-        string surname { get; }
+        string name { get; set; }
+        string surname { get; set; }
         IEnumerable<IEnclosure> visitedEnclosures { get; }
     }
 }

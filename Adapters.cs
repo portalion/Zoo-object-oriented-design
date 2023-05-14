@@ -7,7 +7,7 @@ namespace MainRepresentation
         Enclosure adaptee;
         public EnclosureAdapter(Enclosure adaptee) { this.adaptee = adaptee; }
 
-        public string name { get { return adaptee.name; } }
+        public string name { get { return adaptee.name; }set { adaptee.name = value; } }
         public IEmployee employee { get { return new EmployeeAdapter(adaptee.employee); } }
         public IEnumerable<IAnimal> animals
         {
@@ -22,19 +22,20 @@ namespace MainRepresentation
     {
         Animal adaptee;
         public AnimalAdapter(Animal adaptee) { this.adaptee = adaptee; }
-        public string name { get { return adaptee.name; } }
-        public int age { get { return adaptee.age; } }
+        public string name { get { return adaptee.name; } set { adaptee.name = value; } }
+        public int age { get { return adaptee.age; } set { adaptee.age = value; } }
         public ISpecies species { get { return new SpeciesAdapter(adaptee.species); } }
     }
     public class SpeciesAdapter : ISpecies
     {
         Species adaptee;
         public SpeciesAdapter(Species adaptee) { this.adaptee = adaptee; }
-        public string name { get { return adaptee.name; } }
+        public string name { get { return adaptee?.name; } set { adaptee.name = value; } }
         public IEnumerable<ISpecies> favouriteFoods
         {
             get
             {
+                if(adaptee.favouriteFoods == null) yield break;
                 foreach (var species in adaptee.favouriteFoods)
                     yield return new SpeciesAdapter(species);
             }
@@ -44,13 +45,14 @@ namespace MainRepresentation
     {
         Employee adaptee;
         public EmployeeAdapter(Employee adaptee) { this.adaptee = adaptee; }
-        public string name { get { return adaptee.name; } }
-        public string surname { get { return adaptee.surname; } }
-        public int age { get { return adaptee.age; } }
+        public string name { get { return adaptee?.name; } set { adaptee.name = value; } }
+        public string surname { get { return adaptee?.surname; } set { adaptee.surname = value; } }
+        public int age { get { return adaptee == null ? 0 : adaptee.age; } set { adaptee.age = value; } }
         public IEnumerable<IEnclosure> enclosures
         {
             get
             {
+                if (adaptee.enclosures == null) yield break;
                 foreach (var enclosure in adaptee.enclosures)
                     yield return new EnclosureAdapter(enclosure);
             }
@@ -60,12 +62,13 @@ namespace MainRepresentation
     {
         Visitor adaptee;
         public VisitorAdapter(Visitor adaptee) { this.adaptee = adaptee; }
-        public string name { get { return adaptee.name; } }
-        public string surname { get { return adaptee.surname; } }
+        public string name { get { return adaptee.name; } set { adaptee.name = value; } }
+        public string surname { get { return adaptee.surname; }set { adaptee.surname = value; } }
         public IEnumerable<IEnclosure> visitedEnclosures
         {
             get
             {
+                if (adaptee.visitedEnclosures == null) yield break;
                 foreach (var enclosure in adaptee.visitedEnclosures)
                     yield return new EnclosureAdapter(enclosure);
             }
@@ -113,6 +116,8 @@ namespace SecondRepresentation
                     else throw new KeyNotFoundException();
             } 
         }
+
+        string IEnclosure.name { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     }
     public class SpeciesAdapter : ISpecies
     {
@@ -130,6 +135,7 @@ namespace SecondRepresentation
             {
                 return adaptee.data.Split('$')[0];
             }
+            set { }
         }
 
         public IEnumerable<ISpecies> favouriteFoods
@@ -166,6 +172,9 @@ namespace SecondRepresentation
                 else throw new KeyNotFoundException();
             } 
         }
+
+        string IAnimal.name { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        int IAnimal.age { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     }
     public class EmployeeAdapter : IEmployee
     {
@@ -198,6 +207,10 @@ namespace SecondRepresentation
                     else throw new KeyNotFoundException();
             }
         }
+
+        string IEmployee.name { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        string IEmployee.surname { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        int IEmployee.age { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     }
     public class VisitorAdapter : IVisitor
     {
@@ -232,6 +245,9 @@ namespace SecondRepresentation
                 }
             }
         }
+
+        string IVisitor.name { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        string IVisitor.surname { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     }
 }
 
@@ -254,11 +270,19 @@ namespace ThirdRepresentation
             this.animalsDict = animals;
         }
 
-        public string name { get { return adaptee.data["name"]; } }
+        public string name { get { return adaptee.data["name"]; }
+            set
+            {
+                if (adaptee.data.ContainsKey("name"))
+                    adaptee.data["name"] = value;
+                else adaptee.data.Add("name", value);
+            }
+        }
         public IEmployee employee
         {
             get
             {
+                if (!adaptee.data.ContainsKey("employee"))return null;
                 var id = int.Parse(adaptee.data["employee"]);
                 return new EmployeeAdapter(employees[id], species, employees, enclosures, animalsDict);
             }
@@ -267,6 +291,7 @@ namespace ThirdRepresentation
         {
             get
             {
+                if (!adaptee.data.ContainsKey("animals.Size()")) yield break;
                 int size = int.Parse(adaptee.data["animals.Size()"]);
                 for (int i = 0; i < size; i++)
                     yield return new AnimalAdapter(animalsDict[int.Parse(adaptee.data[$"animals[{i}]"])], species);
@@ -290,12 +315,19 @@ namespace ThirdRepresentation
             {
                 return adaptee.data["name"];
             }
+            set
+            {
+                if (adaptee.data.ContainsKey("name"))
+                    adaptee.data["name"] = value;
+                else adaptee.data.Add("name", value);
+            }
         }
 
         public IEnumerable<ISpecies> favouriteFoods
         {
             get
             {
+                if (!adaptee.data.ContainsKey("favouriteFoods.Size()")) yield break;
                 int size = int.Parse(adaptee.data["favouriteFoods.Size()"]);
                 for (int i = 0; i < size; i++)
                     yield return new SpeciesAdapter(
@@ -313,12 +345,27 @@ namespace ThirdRepresentation
             speciesDict = species;
         }
 
-        public string name { get { return adaptee.data["name"]; } }
-        public int age { get { return int.Parse(adaptee.data["age"]); } }
+        public string name { get { return adaptee.data["name"]; }
+            set
+            {
+                if (adaptee.data.ContainsKey("name"))
+                    adaptee.data["name"] = value;
+                else adaptee.data.Add("name", value);
+            }
+        }
+        public int age { get { return int.Parse(adaptee.data["age"]); }
+            set
+            {
+                if (adaptee.data.ContainsKey("age"))
+                    adaptee.data["age"] = $"{value}";
+                else adaptee.data.Add("age", $"{value}");
+            }
+        }
         public ISpecies species
         {
             get
             {
+                if (!adaptee.data.ContainsKey("species")) return null;
                 return new SpeciesAdapter(speciesDict[int.Parse(adaptee.data["species"])], speciesDict);
             }
         }
@@ -340,13 +387,35 @@ namespace ThirdRepresentation
             this.animalsDict = animalsDict;
         }
 
-        public string name { get { return adaptee.data["name"]; } }
-        public string surname { get { return adaptee.data["surname"]; } }
-        public int age { get { return int.Parse(adaptee.data["age"]); } }
+        public string name { get { return adaptee.data["name"]; }
+            set
+            {
+                if (adaptee.data.ContainsKey("name"))
+                    adaptee.data["name"] = value;
+                else adaptee.data.Add("name", value);
+            }
+        }
+        public string surname { get { return adaptee.data["surname"]; }
+            set
+            {
+                if (adaptee.data.ContainsKey("surname"))
+                    adaptee.data["surname"] = value;
+                else adaptee.data.Add("surname", value);
+            }
+        }
+        public int age { get { return int.Parse(adaptee.data["age"]); }
+            set
+            {
+                if (adaptee.data.ContainsKey("age"))
+                    adaptee.data["age"] = $"{value}";
+                else adaptee.data.Add("age", $"{value}");
+            }
+        }
         public IEnumerable<IEnclosure> enclosures
         {
             get
             {
+                if (!adaptee.data.ContainsKey("enclosures.Size()")) yield break;
                 int size = int.Parse(adaptee.data["enclosures.Size()"]);
                 for (int i = 0; i < size; i++)
                     yield return new EnclosureAdapter(enclosureDict
@@ -373,12 +442,27 @@ namespace ThirdRepresentation
             this.animalsDict = animalsDict;
         }
 
-        public string name { get { return adaptee.data["name"]; } }
-        public string surname { get { return adaptee.data["surname"]; } }
+        public string name { get { return adaptee.data["name"]; }
+            set
+            {
+                if (adaptee.data.ContainsKey("name"))
+                    adaptee.data["name"] = value;
+                else adaptee.data.Add("name", value);
+            }
+        }
+        public string surname { get { return adaptee.data["surname"]; }
+            set
+            {
+                if (adaptee.data.ContainsKey("surname"))
+                    adaptee.data["surname"] = value;
+                else adaptee.data.Add("surname", value);
+            }
+        }
         public IEnumerable<IEnclosure> visitedEnclosures
         {
             get
             {
+                if (!adaptee.data.ContainsKey("visitedEnclosures.Size()")) yield break;
                 int size = int.Parse(adaptee.data["visitedEnclosures.Size()"]);
                 for (int i = 0; i < size; i++)
                     yield return new EnclosureAdapter(enclosureDict

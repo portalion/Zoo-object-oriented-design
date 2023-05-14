@@ -53,23 +53,29 @@ namespace Zoo
             ["Ryker Polly"] = ("Ryker", "Polly", new string[] { "Break" })
         };
 
-        static Dictionary<string, IEnclosure> MainRepresentationEnclosures = new Dictionary<string, IEnclosure>();
-        static Dictionary<string, IAnimal> MainRepresentationAnimals = new Dictionary<string, IAnimal>();
-        static Dictionary<string, ISpecies> MainRepresentationSpecies = new Dictionary<string, ISpecies>();
-        static Dictionary<string, IEmployee> MainRepresentationEmployees = new Dictionary<string, IEmployee>();
-        static Dictionary<string, IVisitor> MainRepresentationVisitors = new Dictionary<string, IVisitor>();
+        public static Dictionary<string, IEnclosure> MainRepresentationEnclosures = new Dictionary<string, IEnclosure>();
+        public static Dictionary<string, IAnimal> MainRepresentationAnimals = new Dictionary<string, IAnimal>();
+        public static Dictionary<string, ISpecies> MainRepresentationSpecies = new Dictionary<string, ISpecies>();
+        public static Dictionary<string, IEmployee> MainRepresentationEmployees = new Dictionary<string, IEmployee>();
+        public static Dictionary<string, IVisitor> MainRepresentationVisitors = new Dictionary<string, IVisitor>();
 
-        static Dictionary<string, IEnclosure> SecondRepresentationEnclosures = new Dictionary<string, IEnclosure>();
-        static Dictionary<string, IAnimal> SecondRepresentationAnimals = new Dictionary<string, IAnimal>();
-        static Dictionary<string, ISpecies> SecondRepresentationSpecies = new Dictionary<string, ISpecies>();
-        static Dictionary<string, IEmployee> SecondRepresentationEmployees = new Dictionary<string, IEmployee>();
-        static Dictionary<string, IVisitor> SecondRepresentationVisitors = new Dictionary<string, IVisitor>();
+        public static Dictionary<string, IEnclosure> SecondRepresentationEnclosures = new Dictionary<string, IEnclosure>();
+        public static Dictionary<string, IAnimal> SecondRepresentationAnimals = new Dictionary<string, IAnimal>();
+        public static Dictionary<string, ISpecies> SecondRepresentationSpecies = new Dictionary<string, ISpecies>();
+        public static Dictionary<string, IEmployee> SecondRepresentationEmployees = new Dictionary<string, IEmployee>();
+        public static Dictionary<string, IVisitor> SecondRepresentationVisitors = new Dictionary<string, IVisitor>();
 
-        static Dictionary<int, IEnclosure> ThirdRepresentationEnclosures = new Dictionary<int, IEnclosure>();
-        static Dictionary<int, IAnimal> ThirdRepresentationAnimals = new Dictionary<int, IAnimal>();
-        static Dictionary<int, ISpecies> ThirdRepresentationSpecies = new Dictionary<int, ISpecies>();
-        static Dictionary<int, IEmployee> ThirdRepresentationEmployees = new Dictionary<int, IEmployee>();
-        static Dictionary<int, IVisitor> ThirdRepresentationVisitors = new Dictionary<int, IVisitor>();
+        public static Dictionary<int, IEnclosure> ThirdRepresentationEnclosures = new Dictionary<int, IEnclosure>();
+        public static Dictionary<int, IAnimal> ThirdRepresentationAnimals = new Dictionary<int, IAnimal>();
+        public static Dictionary<int, ISpecies> ThirdRepresentationSpecies = new Dictionary<int, ISpecies>();
+        public static Dictionary<int, IEmployee> ThirdRepresentationEmployees = new Dictionary<int, IEmployee>();
+        public static Dictionary<int, IVisitor> ThirdRepresentationVisitors = new Dictionary<int, IVisitor>();
+
+        public static Dictionary<int, ThirdRepresentation.Enclosure> thenclosures = new Dictionary<int, ThirdRepresentation.Enclosure>();
+        public static Dictionary<int, ThirdRepresentation.Animal> thanimals = new Dictionary<int, ThirdRepresentation.Animal>();
+        public static Dictionary<int, ThirdRepresentation.Employee> themployees = new Dictionary<int, ThirdRepresentation.Employee>();
+        public static Dictionary<int, ThirdRepresentation.Species> thspecies = new Dictionary<int, ThirdRepresentation.Species>();
+        public static Dictionary<int, ThirdRepresentation.Visitor> thvisitors = new Dictionary<int, ThirdRepresentation.Visitor>();
 
         public static void PrintObject(object obj)
         {
@@ -83,15 +89,15 @@ namespace Zoo
         public static void PrintEnclosure(IEnclosure enclosure)
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append($"{enclosure.name}, [");
+            if(enclosure.name != null) sb.Append($"{enclosure.name}, [");
             sb.AppendJoin(", ", enclosure.animals.Select(animal => animal.name));
-            sb.Append($"], {enclosure.employee.name} {enclosure.employee.surname}");
+            sb.Append($"], {enclosure.employee?.name} {enclosure.employee?.surname}");
             Console.WriteLine(sb);
         }
         public static void PrintAnimal(IAnimal animal)
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append($"{animal.name}, {animal.age}, {animal.species.name}");
+            sb.Append($"{animal.name}, {animal.age}, {animal.species?.name}");
             Console.WriteLine(sb);
         }
         public static void PrintSpecies(ISpecies species)
@@ -254,37 +260,31 @@ namespace Zoo
         }
         static void CreateThirdRepresentationObjects() 
         {
-            Dictionary<int, ThirdRepresentation.Enclosure> enclosures = new Dictionary<int, ThirdRepresentation.Enclosure>();
-            Dictionary<int, ThirdRepresentation.Animal> animals = new Dictionary<int, ThirdRepresentation.Animal>();
-            Dictionary<int, ThirdRepresentation.Employee> employees = new Dictionary<int, ThirdRepresentation.Employee>();
-            Dictionary<int, ThirdRepresentation.Species> species = new Dictionary<int, ThirdRepresentation.Species>();
-            Dictionary<int, ThirdRepresentation.Visitor> visitors = new Dictionary<int, ThirdRepresentation.Visitor>();
-
-            //Create Objects
-            int id = 0;
+        //Create Objects
+        int id = 0;
             foreach (var speciesData in SpeciesData.Values) 
             {
-                species[id] = new ThirdRepresentation.Species(id, new Dictionary<string, string>());
-                species[id].data["name"] = speciesData.name;
-                species[id].data["favouriteFoods.Size()"] = speciesData.foods.Length.ToString();
+                thspecies[id] = new ThirdRepresentation.Species(id, new Dictionary<string, string>());
+                thspecies[id].data["name"] = speciesData.name;
+                thspecies[id].data["favouriteFoods.Size()"] = speciesData.foods.Length.ToString();
                 for(int i = 0; i < speciesData.foods.Length; i++)
-                    species[id].data[$"favouriteFoods[{i}]"] = speciesData.foods[i];
+                    thspecies[id].data[$"favouriteFoods[{i}]"] = speciesData.foods[i];
                 id++;
             }
 
-            foreach (var specie in species)
+            foreach (var specie in thspecies)
                 for (int i = 0; i < int.Parse(specie.Value.data["favouriteFoods.Size()"]); i++)
-                    specie.Value.data[$"favouriteFoods[{i}]"] = species.Where(spe => spe.Value.data["name"] ==
+                    specie.Value.data[$"favouriteFoods[{i}]"] = thspecies.Where(spe => spe.Value.data["name"] ==
                     specie.Value.data[$"favouriteFoods[{i}]"]).First().Key.ToString();
 
             id = 0;
             foreach (var animalData in AnimalData.Values)
             {
-                animals[id] = new ThirdRepresentation.Animal(id, new Dictionary<string, string>());
-                animals[id].data["name"] = animalData.name;
-                animals[id].data["age"] = animalData.age.ToString();
-                animals[id].data["species"] = 
-                    species.Where(spe => spe.Value.data["name"] == animalData.species)
+                thanimals[id] = new ThirdRepresentation.Animal(id, new Dictionary<string, string>());
+                thanimals[id].data["name"] = animalData.name;
+                thanimals[id].data["age"] = animalData.age.ToString();
+                thanimals[id].data["species"] = 
+                    thspecies.Where(spe => spe.Value.data["name"] == animalData.species)
                     .First().Key.ToString();
                 id++;
             }
@@ -292,27 +292,27 @@ namespace Zoo
             id = 0;
             foreach (var enclosureData in EnclosureData.Values)
             {
-                enclosures[id] = new ThirdRepresentation.Enclosure(id, new Dictionary<string, string>());
-                enclosures[id].data["name"] = enclosureData.name;
-                enclosures[id].data["animals.Size()"] = enclosureData.animals.Length.ToString();
-                enclosures[id].data["employee"] = enclosureData.employee;
+                thenclosures[id] = new ThirdRepresentation.Enclosure(id, new Dictionary<string, string>());
+                thenclosures[id].data["name"] = enclosureData.name;
+                thenclosures[id].data["animals.Size()"] = enclosureData.animals.Length.ToString();
+                thenclosures[id].data["employee"] = enclosureData.employee;
                 for(int i = 0; i < enclosureData.animals.Length; i++)
-                    enclosures[id].data[$"animals[{i}]"] = 
-                        animals.Where(spe => spe.Value.data["name"] == enclosureData.animals[i]).First().Key.ToString();
+                    thenclosures[id].data[$"animals[{i}]"] = 
+                        thanimals.Where(spe => spe.Value.data["name"] == enclosureData.animals[i]).First().Key.ToString();
                 id++;
             }
 
             id = 0;
             foreach (var employeeData in EmployeeData.Values) 
             {
-                employees[id] = new ThirdRepresentation.Employee(id, new Dictionary<string, string>());
-                employees[id].data["name"] = employeeData.name;
-                employees[id].data["surname"] = employeeData.surname;
-                employees[id].data["age"] = employeeData.age.ToString();
-                employees[id].data["enclosures.Size()"] = employeeData.enclosures.Length.ToString();
+                themployees[id] = new ThirdRepresentation.Employee(id, new Dictionary<string, string>());
+                themployees[id].data["name"] = employeeData.name;
+                themployees[id].data["surname"] = employeeData.surname;
+                themployees[id].data["age"] = employeeData.age.ToString();
+                themployees[id].data["enclosures.Size()"] = employeeData.enclosures.Length.ToString();
                 for(int i = 0; i < employeeData.enclosures.Length; i++)
-                    employees[id].data[$"enclosures[{i}]"] = 
-                        enclosures.Where(enc => (enc.Value.data["name"] == employeeData.enclosures[i]))
+                    themployees[id].data[$"enclosures[{i}]"] = 
+                        thenclosures.Where(enc => (enc.Value.data["name"] == employeeData.enclosures[i]))
                         .First().Key.ToString();
                 id++;
             }
@@ -320,39 +320,39 @@ namespace Zoo
             id = 0;
             foreach(var visitor in VisitorData.Values)
             {
-                visitors[id] = new ThirdRepresentation.Visitor(id, new Dictionary<string, string>());
-                visitors[id].data["name"] = visitor.name;
-                visitors[id].data["surname"] = visitor.surname;
-                visitors[id].data["visitedEnclosures.Size()"] = visitor.enclosures.Length.ToString();
+                thvisitors[id] = new ThirdRepresentation.Visitor(id, new Dictionary<string, string>());
+                thvisitors[id].data["name"] = visitor.name;
+                thvisitors[id].data["surname"] = visitor.surname;
+                thvisitors[id].data["visitedEnclosures.Size()"] = visitor.enclosures.Length.ToString();
                 for (int i = 0; i < visitor.enclosures.Length; i++)
-                    visitors[id].data[$"visitedEnclosures[{i}]"] =
-                        enclosures.Where(enc => (enc.Value.data["name"] == visitor.enclosures[i]))
+                    thvisitors[id].data[$"visitedEnclosures[{i}]"] =
+                        thenclosures.Where(enc => (enc.Value.data["name"] == visitor.enclosures[i]))
                         .First().Key.ToString();
                 id++;
             }
 
-            foreach (var enclosure in enclosures)
-                enclosure.Value.data["employee"] = employees.Where(emp =>
+            foreach (var enclosure in thenclosures)
+                enclosure.Value.data["employee"] = themployees.Where(emp =>
                 (emp.Value.data["name"] + " " + emp.Value.data["surname"]) == enclosure.Value.data["employee"])
                     .First().Key.ToString();
 
             //Adapters
-            foreach (var enclosure in enclosures)
+            foreach (var enclosure in thenclosures)
                 ThirdRepresentationEnclosures.Add(enclosure.Key,
                     new ThirdRepresentation.EnclosureAdapter(
-                        enclosure.Value, species, employees, enclosures, animals));
-            foreach (var animal in animals)
+                        enclosure.Value, thspecies, themployees, thenclosures, thanimals));
+            foreach (var animal in thanimals)
                 ThirdRepresentationAnimals.Add(animal.Key,
-                    new ThirdRepresentation.AnimalAdapter(animal.Value, species));
-            foreach (var specie in species)
+                    new ThirdRepresentation.AnimalAdapter(animal.Value, thspecies));
+            foreach (var specie in thspecies)
                 ThirdRepresentationSpecies.Add(specie.Key,
-                    new ThirdRepresentation.SpeciesAdapter(specie.Value, species));
-            foreach (var employee in employees)
+                    new ThirdRepresentation.SpeciesAdapter(specie.Value, thspecies));
+            foreach (var employee in themployees)
                 ThirdRepresentationEmployees.Add(employee.Key,
-                    new ThirdRepresentation.EmployeeAdapter(employee.Value, species, employees, enclosures, animals));
-            foreach (var visitor in visitors)
+                    new ThirdRepresentation.EmployeeAdapter(employee.Value, thspecies, themployees, thenclosures, thanimals));
+            foreach (var visitor in thvisitors)
                 ThirdRepresentationVisitors.Add(visitor.Key,
-                    new ThirdRepresentation.VisitorAdapter(visitor.Value, employees, species, enclosures, animals));
+                    new ThirdRepresentation.VisitorAdapter(visitor.Value, themployees, thspecies, thenclosures, thanimals));
         }
 
         static void Main()

@@ -1,10 +1,4 @@
 ﻿using static Zoo.Zoo;
-using Zoo;
-using Collections;
-using System.Xml.Serialization;
-using System.Security.Cryptography;
-using System.Diagnostics;
-using System.Net.Http.Headers;
 
 namespace Collections
 {
@@ -26,6 +20,11 @@ namespace Collections
     interface Function<T>
     {
         void operations(T toCheck);
+    }
+
+    public class TruePredicate<T> : Predicate<T>
+    {
+        public bool fulfills(T toCheck) { return true; }
     }
 
     static class Algorithms
