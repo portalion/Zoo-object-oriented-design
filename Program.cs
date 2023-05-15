@@ -1,5 +1,4 @@
-﻿using Collections;
-using System.Text;
+﻿using System.Text;
 
 namespace Zoo
 {
@@ -82,7 +81,6 @@ namespace Zoo
             foreach(var field in obj.gettersForUsers)
                 Console.WriteLine($"{field.Key}: {field.Value()}");
         }
-
         static void CreateMainRepresentationObjects()
         {
             Dictionary<string, MainRepresentation.Enclosure> enclosures = new Dictionary<string, MainRepresentation.Enclosure>();
@@ -318,7 +316,7 @@ namespace Zoo
             CreateMainRepresentationObjects();
             CreateSecondRepresentationObjects();
             CreateThirdRepresentationObjects();
-            App app = new App();
+            App app = App.GetInstance();
             app.Init(MainRepresentationEnclosures, MainRepresentationAnimals, MainRepresentationSpecies,
                 MainRepresentationEmployees, MainRepresentationVisitors);
             app.Start();
