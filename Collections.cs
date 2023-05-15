@@ -1,113 +1,112 @@
 ﻿using static Zoo.Zoo;
+using Zoo;
+using Collections;
+using System.Xml.Serialization;
+using System.Security.Cryptography;
+using System.Diagnostics;
+using System.Net.Http.Headers;
 
 namespace Collections
 {
-    interface Iterator<T>
+    interface Iterator
     {
-        T? MoveNext();
+        IEditableByUser? MoveNext();
     }
-    interface ICollection<T>
+    interface ICollection
     {
-        void Add(T toAdd);
-        void Remove(Iterator<T> toRemove);
-        Iterator<T> GetIterator();
-        Iterator<T> GetReverseIterator();
+        void Add(IEditableByUser toAdd);
+        void Remove(Iterator toRemove);
+        Iterator GetIterator();
+        Iterator GetReverseIterator();
     }
-    interface Predicate <T>
+    interface Predicate
     {
-        bool fulfills(T toCheck);
+        bool fulfills(IEditableByUser toCheck);
     }
-    interface Function<T>
+    interface Function
     {
-        void operations(T toCheck);
-    }
-
-    public class TruePredicate<T> : Predicate<T>
-    {
-        public bool fulfills(T toCheck) { return true; }
+        void operations(IEditableByUser toCheck);
     }
 
     static class Algorithms
     {
-        static public T? Find<T>(Iterator<T> toSearch, Predicate<T> predicate)
+        static public IEditableByUser? Find(Iterator toSearch, Predicate predicate)
         {
-            T? toCheck;
+            IEditableByUser? toCheck;
             while ((toCheck = toSearch.MoveNext()) != null)
             {
                 if (predicate.fulfills(toCheck)) return toCheck;
             }
-            return default;
+            return null;
         }
-        static public void Print<T>(Iterator<T> toSearch, Predicate<T> predicate)
+        static public void Print(Iterator toSearch, Predicate predicate)
         {
-            T? toCheck;
+            IEditableByUser? toCheck;
             while ((toCheck = toSearch.MoveNext()) != null)
             {
                 if (predicate.fulfills(toCheck))
-                    PrintObject(toCheck);
+                    PrintToUser(toCheck);
             }
         }
-        static public void ForEach<T>(Iterator<T> toSearch, Function<T> function)
+        static public void ForEach(Iterator toSearch, Function function)
         {
-            T? toCheck;
+            IEditableByUser? toCheck;
             while ((toCheck = toSearch.MoveNext()) != null)
                 function.operations(toCheck);
         }
-        static public int CountIf<T>(Iterator<T> toSearch, Predicate<T> predicate)
+        static public int CountIf(Iterator toSearch, Predicate predicate)
         {
             int counter = 0;
-            T? toCheck;
+            IEditableByUser? toCheck;
             while ((toCheck = toSearch.MoveNext()) != null)
                 if (predicate.fulfills(toCheck)) counter++;
-            return counter;        
+            return counter;
         }
-    }  
-    
-    class DoubleLinkList<T> : ICollection<T>
+    }
+
+    class DoubleLinkList : ICollection
     {
         class Node
         {
-            public T? value { get; set; }
+            public IEditableByUser? value { get; set; }
             public Node? next { get; set; }
             public Node? prev { get; set; }
-            public Node(T? value = default, Node? prev = null, Node? next = null)
+            public Node(IEditableByUser? value = null, Node? prev = null, Node? next = null)
             {
                 this.value = value;
                 this.prev = prev;
                 this.next = next;
             }
         }
-        class ForwardDoubleLinkListIterator : Iterator<T>
+        class ForwardDoubleLinkListIterator : Iterator
         {
             Node? actual;
             public ForwardDoubleLinkListIterator(Node? ListStart)
             {
-                actual = new Node(default, null, ListStart);
+                actual = new Node(null, null, ListStart);
             }
-            public T? MoveNext()
+            public IEditableByUser? MoveNext()
             {
                 actual = actual?.next;
-                if (actual == null) return default;
-                return actual.value;
+                return actual?.value;
             }
         }
-        class ReverseDoubleLinkListIterator : Iterator<T>
+        class ReverseDoubleLinkListIterator : Iterator
         {
             Node? actual;
             public ReverseDoubleLinkListIterator(Node? ListEnd)
             {
-                actual = new Node(default, ListEnd, null);
+                actual = new Node(null, ListEnd, null);
             }
-            public T? MoveNext()
+            public IEditableByUser? MoveNext()
             {
                 actual = actual?.prev;
-                if (actual == null) return default;
-                return actual.value;
+                return actual?.value;
             }
         }
         Node? Head = null;
         Node? Tail = null;
-        public void Add(T toAdd) 
+        public void Add(IEditableByUser toAdd)
         {
             if (Head == null)
             {
@@ -115,7 +114,7 @@ namespace Collections
                 Tail = Head;
                 return;
             }
-            if(Head.next == null)
+            if (Head.next == null)
             {
                 Head = new Node(toAdd, null, Head);
                 Tail.prev = Head;
@@ -124,126 +123,126 @@ namespace Collections
             Head = new Node(toAdd, null, Head);
             Head.next.prev = Head;
         }
-        public void Remove(Iterator<T> val) 
+        public void Remove(Iterator val)
         {
-            T? toRemove = val.MoveNext();
+            IEditableByUser? toRemove = val.MoveNext();
             if (toRemove == null) return;
             Node? actual = Head;
             if (actual == null) return;
-            while (actual.next != null && !actual.value.Equals(toRemove)) actual = actual.next;
+            while (actual.next != null && actual.value != toRemove) actual = actual.next;
 
-            if (!actual.value.Equals(toRemove)) return;
+            if (actual.value != toRemove) return;
 
             if (actual.prev == null) Head = actual.next;
             else actual.prev.next = actual.next;
             if (actual.next == null) Tail = actual.prev;
             else actual.next.prev = actual.prev;
         }
-        public Iterator<T> GetIterator()
+        public Iterator GetIterator()
         {
             return new ForwardDoubleLinkListIterator(Head);
         }
-        public Iterator<T> GetReverseIterator()
+        public Iterator GetReverseIterator()
         {
             return new ReverseDoubleLinkListIterator(Tail);
         }
     }
 
-    class Vector<T> : ICollection<T>
+    class Vector : ICollection
     {
-        class ForwardVectorIterator : Iterator<T>
+        class ForwardVectorIterator : Iterator
         {
             int index;
-            Vector<T> vector;
-            public ForwardVectorIterator(Vector<T> vector)
+            Vector vector;
+            public ForwardVectorIterator(Vector vector)
             {
                 index = -1;
                 this.vector = vector;
             }
-            public T? MoveNext()
+            public IEditableByUser? MoveNext()
             {
-                return index == vector.size ? default : vector.values[++index];
+                return index == vector.size ? null : vector.values[++index];
             }
         }
-        class ReverseVectorIterator : Iterator<T>
+        class ReverseVectorIterator : Iterator
         {
             int index;
-            Vector<T> vector;
-            public ReverseVectorIterator(Vector<T> vector)
+            Vector vector;
+            public ReverseVectorIterator(Vector vector)
             {
                 index = vector.size;
                 this.vector = vector;
             }
 
-            public T? MoveNext()
+            public IEditableByUser? MoveNext()
             {
-                return index == 0 ? default : vector.values[--index];
+                return index == 0 ? null : vector.values[--index];
             }
         }
         int size;
-        T?[] values;
+        IEditableByUser?[] values;
         public Vector(int size = 2)
         {
             if (size < 2) throw new ArgumentException("size");
-            values = new T?[size];
+            values = new IEditableByUser?[size];
             this.size = 0;
         }
 
-        public void Add(T value)
+        public void Add(IEditableByUser value)
         {
-            if(values.Length == size)
+            if (values.Length == size)
             {
                 var tmp = values;
-                values = new T?[tmp.Length * 2];
+                values = new IEditableByUser?[tmp.Length * 2];
                 for (int i = 0; i < size; i++)
                     values[i] = tmp[i];
             }
-           
+
             values[size++] = value;
         }
 
-        public void Remove(Iterator<T> iterator)
+        public void Remove(Iterator iterator)
         {
-            T? toDeleteEnclosure = iterator.MoveNext();
+            IEditableByUser? toDeleteEnclosure = iterator.MoveNext();
             if (toDeleteEnclosure == null) return;
             int toDelete = 0;
             for (toDelete = 0; toDelete < size; toDelete++)
-                if (values[toDelete].Equals(toDeleteEnclosure)) break;
+                if (values[toDelete] == toDeleteEnclosure) break;
 
             for (int i = toDelete; i < size - 1; i++)
                 values[i] = values[i + 1];
 
-            values[size--] = default;
+            values[size--] = null;
         }
 
-        public Iterator<T> GetIterator()
+        public Iterator GetIterator()
         {
             return new ForwardVectorIterator(this);
         }
-        public Iterator<T> GetReverseIterator()
+        public Iterator GetReverseIterator()
         {
             return new ReverseVectorIterator(this);
         }
     }
-    
-    class BinaryTree<T> : ICollection<T>
+
+    class BinaryTree : ICollection
     {
         class Node
         {
             public Node? parent;
-            public Node? left; 
+            public Node? left;
             public Node? right;
-            public T value;
-            public Node(T value, Node? parent = null, Node? left = null, Node? right = null)
+            public IEditableByUser value;
+            public Node(IEditableByUser value, Node? parent = null, Node? left = null, Node? right = null)
             {
                 this.value = value;
                 this.parent = parent;
                 this.left = left;
-                this.right = right;                
+                this.right = right;
             }
         }
 
-        class ForwardBinaryTreeIterator : Iterator<T>
+        class ForwardBinaryTreeIterator : Iterator
         {
             Node? root;
             int state;
@@ -259,12 +258,12 @@ namespace Collections
                     it = new ForwardBinaryTreeIterator(this.root.left);
                 }
             }
-            public T? MoveNext()
+            public IEditableByUser? MoveNext()
             {
-                if (state == 0) return default;
+                if (state == 0) return null;
                 else if (state == 1)
                 {
-                    T? toCheck = it == null ? default : it.MoveNext();
+                    IEditableByUser? toCheck = it?.MoveNext();
                     if (toCheck != null) return toCheck;
 
                     state = 2;
@@ -274,12 +273,12 @@ namespace Collections
                 {
                     state = 3;
                     it = new ForwardBinaryTreeIterator(root?.right);
-                    return root == null ? default : root.value;
+                    return root?.value;
                 }
-                else return it == null ? default : it.MoveNext();
+                else return it?.MoveNext();
             }
         }
-        class ReverseBinaryTreeIterator : Iterator<T>
+        class ReverseBinaryTreeIterator : Iterator
         {
             Node? root;
             int state;
@@ -294,12 +293,12 @@ namespace Collections
                     it = new ReverseBinaryTreeIterator(this.root.right);
                 }
             }
-            public T? MoveNext()
+            public IEditableByUser? MoveNext()
             {
-                if (state == 0) return default;
+                if (state == 0) return null;
                 else if (state == 1)
                 {
-                    T? toCheck = it == null ? default : it.MoveNext();
+                    IEditableByUser? toCheck = it?.MoveNext();
                     if (toCheck != null) return toCheck;
 
                     state = 2;
@@ -309,9 +308,9 @@ namespace Collections
                 {
                     state = 3;
                     it = new ReverseBinaryTreeIterator(root?.left);
-                    return root == null ? default : root.value;
+                    return root?.value;
                 }
-                else return it == null ? default : it.MoveNext();
+                else return it?.MoveNext();
             }
         }
 
@@ -321,20 +320,20 @@ namespace Collections
             root = null;
         }
 
-        public Iterator<T> GetIterator()
+        public Iterator GetIterator()
         {
             return new ForwardBinaryTreeIterator(root);
         }
-        public Iterator<T> GetReverseIterator()
+        public Iterator GetReverseIterator()
         {
             return new ReverseBinaryTreeIterator(root);
         }
 
-        Node? getNodeWithValue(Node? node, T value)
+        Node? getNodeWithValue(Node? node, IEditableByUser value)
         {
             if (node == null)
                 return null;
-            if (node.value.Equals(value))
+            if (node.value == value)
                 return node;
 
             Node? result = getNodeWithValue(node.left, value);
@@ -355,9 +354,9 @@ namespace Collections
             else tmp.left = null;
         }
 
-        public void Add(T value)
+        public void Add(IEditableByUser value)
         {
-            if(root == null)
+            if (root == null)
             {
                 root = new Node(value);
                 return;
@@ -381,10 +380,10 @@ namespace Collections
                 actual.left = new Node(value, actual);
             else actual.right = new Node(value, actual);
         }
-        public void Remove(Iterator<T> iter)
+        public void Remove(Iterator iter)
         {
             if (root == null) return;
-            T? value = iter.MoveNext();
+            IEditableByUser? value = iter.MoveNext();
 
             if (value == null) return;
 
