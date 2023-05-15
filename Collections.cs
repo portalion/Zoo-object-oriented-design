@@ -28,6 +28,11 @@ namespace Collections
         void operations(IEditableByUser toCheck);
     }
 
+    public class TruePredicate : Predicate
+    {
+        public bool fulfills(IEditableByUser toCheck) { return true; }
+    }
+
     static class Algorithms
     {
         static public IEditableByUser? Find(Iterator toSearch, Predicate predicate)
@@ -147,7 +152,6 @@ namespace Collections
             return new ReverseDoubleLinkListIterator(Tail);
         }
     }
-
     class Vector : ICollection
     {
         class ForwardVectorIterator : Iterator
@@ -224,7 +228,6 @@ namespace Collections
             return new ReverseVectorIterator(this);
         }
     }
-
     class BinaryTree : ICollection
     {
         class Node

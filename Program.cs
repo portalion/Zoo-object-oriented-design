@@ -80,7 +80,7 @@ namespace Zoo
         public static void PrintToUser(IEditableByUser obj)
         {
             foreach(var field in obj.gettersForUsers)
-                Console.WriteLine($"{field.Key}: {field.Value}");
+                Console.WriteLine($"{field.Key}: {field.Value()}");
         }
 
         static void CreateMainRepresentationObjects()

@@ -6,11 +6,11 @@ namespace Zoo
 {
     internal class App
     {
-        static Collections.ICollection<IEnclosure> enclosures = new DoubleLinkList<IEnclosure>();
-        static Collections.ICollection<IAnimal> animals = new Vector<IAnimal>();
-        static Collections.ICollection<ISpecies> species  = new BinaryTree<ISpecies>();
-        static Collections.ICollection<IEmployee> employees = new BinaryTree<IEmployee>();
-        static Collections.ICollection<IVisitor> visitors = new DoubleLinkList<IVisitor>();
+        static Collections.ICollection enclosures = new DoubleLinkList();
+        static Collections.ICollection animals = new Vector();
+        static Collections.ICollection species  = new BinaryTree();
+        static Collections.ICollection employees = new BinaryTree();
+        static Collections.ICollection visitors = new DoubleLinkList();
 
         
         public class EnclosureCommand : Command
@@ -21,7 +21,7 @@ namespace Zoo
 
             public override void list()
             {
-                Collections.Algorithms.Print(enclosures.GetIterator(), new TruePredicate<IEnclosure>());
+                Collections.Algorithms.Print(enclosures.GetIterator(), new TruePredicate());
             }
             public override bool ValidatePredicate(string arg)
             {
@@ -39,14 +39,14 @@ namespace Zoo
 
             public override void printWithPredicate()
             {
-                IEnclosure? toCheck;
-                Iterator<IEnclosure> it = enclosures.GetIterator();
+                IEditableByUser? toCheck;
+                Iterator it = enclosures.GetIterator();
                 while ((toCheck = it.MoveNext()) != null)
                 {
                     bool print = true;
                     for (int i = 1; i < arguments.Length; i++)
-                        if (!isGood(arguments[i], toCheck)) print = false;
-                    if (print) Zoo.PrintEnclosure(toCheck);
+                        if (!isGood(arguments[i], (IEnclosure)toCheck)) print = false;
+                    if (print) Zoo.PrintToUser(toCheck);
                 }
                     
             }
@@ -114,7 +114,7 @@ namespace Zoo
 
             public override void list()
             {
-                Collections.Algorithms.Print(animals.GetIterator(), new TruePredicate<IAnimal>());
+                Collections.Algorithms.Print(animals.GetIterator(), new TruePredicate());
             }
             public override bool ValidatePredicate(string arg)
             {
@@ -131,14 +131,14 @@ namespace Zoo
             }
             public override void printWithPredicate()
             {
-                IAnimal? toCheck;
-                Iterator<IAnimal> it = animals.GetIterator();
+                IEditableByUser? toCheck;
+                Iterator it = animals.GetIterator();
                 while ((toCheck = it.MoveNext()) != null)
                 {
                     bool print = true;
                     for (int i = 1; i < arguments.Length; i++)
-                        if (!isGood(arguments[i], toCheck)) print = false;
-                    if (print) Zoo.PrintAnimal(toCheck);
+                        if (!isGood(arguments[i], (IAnimal)toCheck)) print = false;
+                    if (print) Zoo.PrintToUser(toCheck);
                 }
             }
             private bool isGood(string arg, IAnimal val)
@@ -210,7 +210,7 @@ namespace Zoo
 
             public override void list()
             {
-                Collections.Algorithms.Print(visitors.GetIterator(), new TruePredicate<IVisitor>());
+                Collections.Algorithms.Print(visitors.GetIterator(), new TruePredicate());
             }
             public override bool ValidatePredicate(string arg)
             {
@@ -227,14 +227,14 @@ namespace Zoo
             }
             public override void printWithPredicate()
             {
-                IVisitor? toCheck;
-                Iterator<IVisitor> it = visitors.GetIterator();
+                IEditableByUser? toCheck;
+                Iterator it = visitors.GetIterator();
                 while ((toCheck = it.MoveNext()) != null)
                 {
                     bool print = true;
                     for (int i = 1; i < arguments.Length; i++)
-                        if (!isGood(arguments[i], toCheck)) print = false;
-                    if (print) Zoo.PrintVisitor(toCheck);
+                        if (!isGood(arguments[i], (IVisitor)toCheck)) print = false;
+                    if (print) Zoo.PrintToUser(toCheck);
                 }
             }
             private bool isGood(string arg, IVisitor val)
@@ -304,7 +304,7 @@ namespace Zoo
 
             public override void list()
             {
-                Collections.Algorithms.Print(employees.GetIterator(), new TruePredicate<IEmployee>());
+                Collections.Algorithms.Print(employees.GetIterator(), new TruePredicate());
             }
             public override bool ValidatePredicate(string arg)
             {
@@ -321,14 +321,14 @@ namespace Zoo
             }
             public override void printWithPredicate()
             {
-                IEmployee? toCheck;
-                Iterator<IEmployee> it = employees.GetIterator();
+                IEditableByUser? toCheck;
+                Iterator it = employees.GetIterator();
                 while ((toCheck = it.MoveNext()) != null)
                 {
                     bool print = true;
                     for (int i = 1; i < arguments.Length; i++)
-                        if (!isGood(arguments[i], toCheck)) print = false;
-                    if (print) Zoo.PrintEmployee(toCheck);
+                        if (!isGood(arguments[i], (IEmployee)toCheck)) print = false;
+                    if (print) Zoo.PrintToUser(toCheck);
                 }
             }
             private bool isGood(string arg, IEmployee val)
@@ -403,7 +403,7 @@ namespace Zoo
 
             public override void list()
             {
-                Collections.Algorithms.Print(species.GetIterator(), new TruePredicate<ISpecies>());
+                Collections.Algorithms.Print(species.GetIterator(), new TruePredicate());
             }
             public override bool ValidatePredicate(string arg)
             {
@@ -420,14 +420,14 @@ namespace Zoo
             }
             public override void printWithPredicate()
             {
-                ISpecies? toCheck;
-                Iterator<ISpecies> it = species.GetIterator();
+                IEditableByUser? toCheck;
+                Iterator it = species.GetIterator();
                 while ((toCheck = it.MoveNext()) != null)
                 {
                     bool print = true;
                     for (int i = 1; i < arguments.Length; i++)
-                        if (!isGood(arguments[i], toCheck)) print = false;
-                    if (print) Zoo.PrintSpecies(toCheck);
+                        if (!isGood(arguments[i], (ISpecies)toCheck)) print = false;
+                    if (print) Zoo.PrintToUser(toCheck);
                 }
             }
             private bool isGood(string arg, ISpecies val)
