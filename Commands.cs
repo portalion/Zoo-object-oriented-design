@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Collections;
 
 namespace Zoo
 {
@@ -11,94 +7,93 @@ namespace Zoo
         Dictionary<string, Action<string>> settersForUsers { get;}
         Dictionary<string, Func<string>> gettersForUsers { get;}
     }
-    abstract class Command
+    public abstract class Command
     {
-        public string[] arguments { get; set; }
-        public string type { get; set; }
+        protected IEnumerable<string> arguments;
+        protected string operation;
+        protected string entity;
+        protected ICollection? entities;
 
         public Command(string userLine)
         {
-            type = userLine.Split(" ")[0];
-            arguments = userLine.Split(" ").Skip(1).ToList().ToArray();
-        }
-        public void execute()
-        {
-            switch (type)
+            var userLineSplited = userLine.Split(" ");
+            operation = userLineSplited[0];
+            if (userLineSplited.Length < 2)
             {
-                case "list":
-                    list();
-                    break;
-                case "find":
-                    find();
-                    break;
-                case "add":
-                    add();
-                    break;
-            }
-        }
-        public void find()
-        {
-            if (arguments.Length == 1)
-            {
-                list();
+                entity = "";
+                arguments = new List<string>();
+                entities = null;
                 return;
             }
-            for (int i = 1; i < arguments.Length; i++)
-                if (!ValidatePredicate(arguments[i]))
-                {
-                    Console.WriteLine($"Invalid argument: {arguments[i]}");
-                    return;
-                }
-            printWithPredicate();
-            Console.WriteLine("Yep we got this");
+            entity = userLineSplited[1];
+            arguments = userLineSplited.Skip(2);
         }
-        public void add()
-        {
-            startAdding();
-            while (true)
-            {
-                var input = Console.ReadLine();
-                if (input == "EXIT")
-                {
-                    Console.WriteLine($"[{arguments[1]} creation abandoned]");
-                    break;
-                }
-                else if (input == "DONE")
-                {
-                    Console.WriteLine($"[{arguments[1]} created]");
-                    Add();
-                    break;
-                }
-                if (!input.Contains("="))
-                {
-                    Console.WriteLine("Specify field and value");
-                    continue;
-                }
-                if (!ValidatePredicate(input))
-                {
-                    Console.WriteLine("Bad argument");
-                    continue;
-                }
-                performOperation(input);
-            }
-        }
-        public abstract void startAdding();
-        public abstract void Add();
-        public abstract void performOperation(string operation);
-        public abstract bool ValidatePredicate(string arg);
-        public abstract void printWithPredicate();
-        public abstract void list();
-        public static Command GetCommand(string entity, string val)
+        protected void SetEntities()
         {
             switch (entity.ToLower())
             {
-                case "enclosure": return new App.EnclosureCommand(val);
-                case "animal": return new App.AnimalCommand(val);
-                case "employee": return new App.EmployeeCommand(val);
-                case "visitor": return new App.VisitorCommand(val);
-                case "species": return new App.SpeciesCommand(val);
+                case "enclosure":
+                    entities = App.enclosures;
+                    break;
+                case "animal": 
+                    entities = App.animals;
+                    break;
+                case "employee":
+                    entities = App.employees;
+                    break;
+                case "visitor":
+                    entities = App.visitors;
+                    break;
+                case "species":
+                    entities = App.species;
+                    break;
+                default: 
+                    entities = null;
+                    break;
             }
-            throw new ArgumentException();
+        }
+        protected virtual bool ValidateArguments() { return true; } //should return false if invalid arguments
+        public abstract void Execute();
+
+        public static Command GetCommand(string userLine)
+        {
+            Command result;
+            switch(userLine.Split(" ")[0].ToLower())
+            {
+                case "exit":
+                    result =  new ExitCommand(userLine);
+                    break;
+                case "list":
+                    result = new ListCommand(userLine);
+                    break;
+                default: throw new InvalidOperationException();
+            }
+            if (!result.ValidateArguments()) throw new ArgumentException();
+            return result;
+        }
+    }
+
+    public class ListCommand : Command
+    {
+        public ListCommand(string userLine) : base(userLine) { SetEntities(); }
+
+        protected override bool ValidateArguments()
+        {
+            if (entities == null) return false;
+            return true;
+        }
+        public override void Execute()
+        {
+            Algorithms.Print(entities.GetIterator(), new TruePredicate());
+        }
+    }
+
+    public class ExitCommand : Command
+    {
+        public ExitCommand(string userLine) :base(userLine) { }
+        public override void Execute() 
+        {
+            App.GetInstance().running = false;
         }
     }
 }

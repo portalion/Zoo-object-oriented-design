@@ -316,6 +316,7 @@ namespace Zoo
             CreateMainRepresentationObjects();
             CreateSecondRepresentationObjects();
             CreateThirdRepresentationObjects();
+
             App app = App.GetInstance();
             app.Init(MainRepresentationEnclosures, MainRepresentationAnimals, MainRepresentationSpecies,
                 MainRepresentationEmployees, MainRepresentationVisitors);

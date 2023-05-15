@@ -51,14 +51,19 @@ namespace Zoo
                 Command command;
                 try
                 {
-                    command = Command.GetCommand(commands[1], input);
+                    command = Command.GetCommand(input);
                 }
-                catch
+                catch (ArgumentException)
                 {
                     Console.WriteLine("Bad argument");
                     continue;
                 }
-                command.execute();
+                catch(InvalidOperationException)
+                {
+                    Console.WriteLine("Bad command");
+                    continue;
+                }
+                command.Execute();
             }
         }
     }
