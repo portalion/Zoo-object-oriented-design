@@ -1,29 +1,24 @@
 ﻿using static Zoo.Zoo;
 using Zoo;
-using Collections;
-using System.Xml.Serialization;
-using System.Security.Cryptography;
-using System.Diagnostics;
-using System.Net.Http.Headers;
 
 namespace Collections
 {
-    interface Iterator
+    public interface Iterator
     {
         IEditableByUser? MoveNext();
     }
-    interface ICollection
+    public interface ICollection
     {
         void Add(IEditableByUser toAdd);
         void Remove(Iterator toRemove);
         Iterator GetIterator();
         Iterator GetReverseIterator();
     }
-    interface Predicate
+    public interface Predicate
     {
         bool fulfills(IEditableByUser toCheck);
     }
-    interface Function
+    public interface Function
     {
         void operations(IEditableByUser toCheck);
     }
@@ -33,7 +28,7 @@ namespace Collections
         public bool fulfills(IEditableByUser toCheck) { return true; }
     }
 
-    static class Algorithms
+    public static class Algorithms
     {
         static public IEditableByUser? Find(Iterator toSearch, Predicate predicate)
         {
@@ -69,7 +64,7 @@ namespace Collections
         }
     }
 
-    class DoubleLinkList : ICollection
+    public class DoubleLinkList : ICollection
     {
         class Node
         {
@@ -152,7 +147,7 @@ namespace Collections
             return new ReverseDoubleLinkListIterator(Tail);
         }
     }
-    class Vector : ICollection
+    public class Vector : ICollection
     {
         class ForwardVectorIterator : Iterator
         {
@@ -228,7 +223,7 @@ namespace Collections
             return new ReverseVectorIterator(this);
         }
     }
-    class BinaryTree : ICollection
+    public class BinaryTree : ICollection
     {
         class Node
         {
