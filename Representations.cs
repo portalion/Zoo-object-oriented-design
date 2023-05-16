@@ -4,7 +4,7 @@
     {
         string name { get; set; }
         IEnumerable<IAnimal> animals { get; }
-        IEmployee employee { get; }
+        IEmployee? employee { get; }
         Dictionary<string, Action<string>> IEditableByUser.settersForUsers
         { 
             get
@@ -23,10 +23,10 @@
                 Dictionary<string, Func<string>> result = new Dictionary<string, Func<string>>()
                 {
                     ["name"] = () => { return name; },
-                    ["employee"] = () => { return $"{employee.name} {employee.surname}"; },
+                    ["employee"] = () => { return $"{employee?.name} {employee?.surname}"; },
                     ["animals"] = () =>
                     {
-                        return String.Join(", ", animals.Select((val) => val.name));
+                        return string.Join(", ", animals.Select((val) => val.name));
                     }
                 };
                 return result;
@@ -37,7 +37,7 @@
     {
         string name { get; set; }
         int age { get; set; }
-        ISpecies species { get; }
+        ISpecies? species { get; }
         Dictionary<string, Action<string>> IEditableByUser.settersForUsers
         {
             get
@@ -58,7 +58,7 @@
                 {
                     ["name"] = () => { return name; },
                     ["age"] = () => { return age.ToString(); },
-                    ["species"] = () => { return species.name; }
+                    ["species"] = () => { return species?.name ?? ""; }
                 };
                 return result;
             }
@@ -174,9 +174,9 @@ namespace MainRepresentation
     {
         public string name { get; set; }
         public List<Animal> animals { get; set; }
-        public Employee employee { get; set; }
+        public Employee? employee { get; set; }
 
-        public Enclosure(string name, List<Animal> animals, Employee employee)
+        public Enclosure(string name, List<Animal> animals, Employee? employee)
         {
             this.name = name;
             this.animals = animals;
@@ -187,8 +187,8 @@ namespace MainRepresentation
     {
         public string name { get; set; }
         public int age { get; set; }
-        public Species species { get; set; }
-        public Animal(string name, int age, Species species)
+        public Species? species { get; set; }
+        public Animal(string name, int age, Species? species)
         {
             this.name = name;
             this.age = age;
