@@ -80,6 +80,7 @@ namespace Zoo
         {
             foreach(var field in obj.gettersForUsers)
                 Console.WriteLine($"{field.Key}: {field.Value()}");
+            Console.WriteLine();
         }
         static void CreateMainRepresentationObjects()
         {

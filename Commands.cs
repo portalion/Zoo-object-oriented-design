@@ -7,52 +7,18 @@ namespace Zoo
         Dictionary<string, Action<string>> settersForUsers { get;}
         Dictionary<string, Func<string>> gettersForUsers { get;}
     }
+
     public abstract class Command
     {
-        protected IEnumerable<string> arguments;
+        protected string[] arguments;
         protected string operation;
-        protected string entity;
-        protected ICollection? entities;
 
         public Command(string userLine)
         {
             var userLineSplited = userLine.Split(" ");
             operation = userLineSplited[0];
-            if (userLineSplited.Length < 2)
-            {
-                entity = "";
-                arguments = new List<string>();
-                entities = null;
-                return;
-            }
-            entity = userLineSplited[1];
-            arguments = userLineSplited.Skip(2);
+            arguments = userLineSplited.Skip(1).ToArray();
         }
-        protected void SetEntities()
-        {
-            switch (entity.ToLower())
-            {
-                case "enclosure":
-                    entities = App.enclosures;
-                    break;
-                case "animal": 
-                    entities = App.animals;
-                    break;
-                case "employee":
-                    entities = App.employees;
-                    break;
-                case "visitor":
-                    entities = App.visitors;
-                    break;
-                case "species":
-                    entities = App.species;
-                    break;
-                default: 
-                    entities = null;
-                    break;
-            }
-        }
-        protected virtual bool ValidateArguments() { return true; } //should return false if invalid arguments
         public abstract void Execute();
 
         public static Command GetCommand(string userLine)
@@ -66,25 +32,69 @@ namespace Zoo
                 case "list":
                     result = new ListCommand(userLine);
                     break;
+                case "add":
+                    result = new AddCommand(userLine);
+                    break;
                 default: throw new InvalidOperationException();
             }
-            if (!result.ValidateArguments()) throw new ArgumentException();
             return result;
         }
     }
 
-    public class ListCommand : Command
+    public abstract class CommandWithFactory : Command
     {
-        public ListCommand(string userLine) : base(userLine) { SetEntities(); }
-
-        protected override bool ValidateArguments()
+        //protected IEditableFactory factory;
+        public CommandWithFactory(string userLine): base(userLine) 
         {
-            if (entities == null) return false;
-            return true;
+            var entity = arguments[0];
+            arguments = arguments.Skip(1).ToArray();
+           
         }
+    }
+
+    public abstract class CommandWithPredicateArgument : Command
+    {
+        public CommandWithPredicateArgument(string userLine) : base(userLine)
+        {
+        }
+    }
+
+    public class AddCommand : CommandWithFactory
+    {
+        public AddCommand(string userLine) : base(userLine)
+        {
+            if(arguments.Length < 1) throw new ArgumentException();
+        }
+
         public override void Execute()
         {
-            Algorithms.Print(entities.GetIterator(), new TruePredicate());
+           /* IEditableByUser result;
+            if (arguments[0] == "base") result = factory.CreateBaseRepresentation();
+            else result = factory.CreateThirdRepresentation();
+
+            Console.WriteLine($"Possible fields: [{String.Join(", ", result.settersForUsers.Keys)}]");
+
+            while (true)
+            {
+                var input = Console.ReadLine();
+                if (input == null) continue;
+                if (input == "EXIT") break;
+                if (input == "DONE")
+                {
+                    factory.GetCollection().Add(result);
+                    break;
+                }
+            }*/
+        }
+    }
+
+    public class ListCommand : CommandWithFactory
+    {
+        public ListCommand(string userLine) : base(userLine) { }
+
+        public override void Execute()
+        {
+            //Algorithms.Print(factory.GetCollection().GetIterator(), new TruePredicate());
         }
     }
 

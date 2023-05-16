@@ -4,11 +4,11 @@ namespace Zoo
 {
     public sealed class App
     {
-        public readonly static ICollection enclosures = new DoubleLinkList();
-        public readonly static ICollection animals = new Vector();
-        public readonly static ICollection species  = new BinaryTree();
-        public readonly static ICollection employees = new BinaryTree();
-        public readonly static ICollection visitors = new DoubleLinkList();
+        public readonly ICollection enclosures = new DoubleLinkList();
+        public readonly ICollection animals = new Vector();
+        public readonly ICollection species  = new BinaryTree();
+        public readonly ICollection employees = new BinaryTree();
+        public readonly ICollection visitors = new DoubleLinkList();
 
         public void Init(Dictionary<string, IEnclosure> enclosures,
             Dictionary<string, IAnimal> animals,
@@ -17,15 +17,15 @@ namespace Zoo
             Dictionary<string, IVisitor> visitors)
         {
             foreach (var enclosure in enclosures.Values)
-                App.enclosures.Add(enclosure);
+                this.enclosures.Add(enclosure);
             foreach (var animal in animals.Values)
-                App.animals.Add(animal);
+                this.animals.Add(animal);
             foreach (var specie in species.Values)
-                App.species.Add(specie);
+                this.species.Add(specie);
             foreach (var employee in employees.Values)
-                App.employees.Add(employee);
+                this.employees.Add(employee);
             foreach (var visitor in visitors.Values)
-                App.visitors.Add(visitor);
+                this.visitors.Add(visitor);
         }
         
         private App() { }
