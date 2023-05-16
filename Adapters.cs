@@ -6,13 +6,15 @@ namespace MainRepresentation
     {
         Enclosure adaptee;
         public EnclosureAdapter(Enclosure adaptee) { this.adaptee = adaptee; }
-
         public string name 
         { 
             get { return adaptee.name; }
             set { adaptee.name = value; } 
         }
-        public IEmployee employee { get { return new EmployeeAdapter(adaptee.employee); } }
+        public IEmployee? employee 
+        { 
+            get { return adaptee.employee == null ? null : new EmployeeAdapter(adaptee.employee); } 
+        }
         public IEnumerable<IAnimal> animals
         {
             get
@@ -28,13 +30,16 @@ namespace MainRepresentation
         public AnimalAdapter(Animal adaptee) { this.adaptee = adaptee; }
         public string name { get { return adaptee.name; } set { adaptee.name = value; } }
         public int age { get { return adaptee.age; } set { adaptee.age = value; } }
-        public ISpecies species { get { return new SpeciesAdapter(adaptee.species); } }
+        public ISpecies? species 
+        { 
+            get { return adaptee.species == null ? null : new SpeciesAdapter(adaptee.species); } 
+        }
     }
     public class SpeciesAdapter : ISpecies
     {
         Species adaptee;
         public SpeciesAdapter(Species adaptee) { this.adaptee = adaptee; }
-        public string name { get { return adaptee?.name; } set { adaptee.name = value; } }
+        public string name { get { return adaptee.name; } set { adaptee.name = value; } }
         public IEnumerable<ISpecies> favouriteFoods
         {
             get
@@ -49,9 +54,9 @@ namespace MainRepresentation
     {
         Employee adaptee;
         public EmployeeAdapter(Employee adaptee) { this.adaptee = adaptee; }
-        public string name { get { return adaptee?.name; } set { adaptee.name = value; } }
-        public string surname { get { return adaptee?.surname; } set { adaptee.surname = value; } }
-        public int age { get { return adaptee == null ? 0 : adaptee.age; } set { adaptee.age = value; } }
+        public string name { get { return adaptee.name; } set { adaptee.name = value; } }
+        public string surname { get { return adaptee.surname; } set { adaptee.surname = value; } }
+        public int age { get { return adaptee.age; } set { adaptee.age = value; } }
         public IEnumerable<IEnclosure> enclosures
         {
             get
@@ -99,8 +104,8 @@ namespace SecondRepresentation
             this.animalsDict = animalsDict;
         }
 
-        public string name { get { return adaptee.data.Split('@')[0]; } }
-        public IEmployee employee 
+        public string name { get { return adaptee.data.Split('@')[0]; } set => throw new NotImplementedException(); }
+        public IEmployee? employee 
         { 
             get 
             {
@@ -120,8 +125,6 @@ namespace SecondRepresentation
                     else throw new KeyNotFoundException();
             } 
         }
-
-        string IEnclosure.name { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     }
     public class SpeciesAdapter : ISpecies
     {
@@ -282,7 +285,7 @@ namespace ThirdRepresentation
                 else adaptee.data.Add("name", value);
             }
         }
-        public IEmployee employee
+        public IEmployee? employee
         {
             get
             {
@@ -365,7 +368,7 @@ namespace ThirdRepresentation
                 else adaptee.data.Add("age", $"{value}");
             }
         }
-        public ISpecies species
+        public ISpecies? species
         {
             get
             {
