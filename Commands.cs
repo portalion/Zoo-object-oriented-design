@@ -12,9 +12,11 @@ namespace Zoo
     {
         protected string[] arguments;
         protected string operation;
+        protected string userLine;
 
         public Command(string userLine)
         {
+            this.userLine = userLine;
             var userLineSplited = userLine.Split(" ");
             operation = userLineSplited[0];
             arguments = userLineSplited.Skip(1).ToArray();
@@ -38,10 +40,15 @@ namespace Zoo
                 case "find":
                     result = new FindCommand(userLine);
                     break;
+                case "delete":
+                    result = new DeleteCommand(userLine);
+                    break;
                 default: throw new InvalidOperationException();
             }
             return result;
         }
+
+        public override abstract string ToString();
     }
 
     public abstract class CommandWithPredicateArgument : Command
@@ -109,6 +116,11 @@ namespace Zoo
             }
             Algorithms.Print(App.nameToColectionDictionary[entity].GetIterator(), pred);
         }
+
+        public override string ToString()
+        {
+            return $"Find {entity} with contidtions: {String.Join(", ", arguments.Skip(1))}";
+        }
     }
 
     public class DeleteCommand : CommandWithPredicateArgument
@@ -124,6 +136,11 @@ namespace Zoo
             if (Algorithms.CountIf(dictionary.GetIterator(), pred) > 1) return;
 
             dictionary.Remove(Algorithms.Find(dictionary.GetIterator(), pred));
+        }
+
+        public override string ToString()
+        {
+            return $"Delete {entity} with contidtions: {String.Join(", ", arguments.Skip(1))}";
         }
     }
 
@@ -161,6 +178,11 @@ namespace Zoo
                 result.settersForUsers[variable[0]](variable[1]);
             }
         }
+
+        public override string ToString()
+        {
+            return $"Add {arguments[0]} with representation: {arguments[1]}";
+        }
     }
 
     public class ListCommand : Command
@@ -173,6 +195,11 @@ namespace Zoo
             Algorithms.Print(App.nameToColectionDictionary[arguments[0]]
                 .GetIterator(), new TruePredicate());
         }
+
+        public override string ToString()
+        {
+            return $"List all {arguments[0]}";
+        }
     }
 
     public class ExitCommand : Command
@@ -181,6 +208,11 @@ namespace Zoo
         public override void Execute() 
         {
             App.GetInstance().running = false;
+        }
+
+        public override string ToString()
+        {
+            return "Exit";
         }
     }
 }

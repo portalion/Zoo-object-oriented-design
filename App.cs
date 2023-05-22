@@ -6,7 +6,7 @@ namespace Zoo
     public sealed class App
     {
         public static readonly ICollection enclosures = new DoubleLinkList();
-        public static readonly ICollection animals = new Vector();
+        public static readonly ICollection animals = new DoubleLinkList();
         public static readonly ICollection species  = new BinaryTree();
         public static readonly ICollection employees = new BinaryTree();
         public static readonly ICollection visitors = new DoubleLinkList();
