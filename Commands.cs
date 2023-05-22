@@ -35,6 +35,9 @@ namespace Zoo
                 case "add":
                     result = new AddCommand(userLine);
                     break;
+                case "find":
+                    result = new FindCommand(userLine);
+                    break;
                 default: throw new InvalidOperationException();
             }
             return result;
@@ -43,8 +46,68 @@ namespace Zoo
 
     public abstract class CommandWithPredicateArgument : Command
     {
+        protected class PredicateToAdd : Predicate
+        {
+            PredicateToAdd? next;
+
+            string toCheck;
+
+            public PredicateToAdd(PredicateToAdd? next, string toCheck)
+            {
+                this.next = next;
+                this.toCheck = toCheck;
+            }
+
+            public bool fulfills(IEditableByUser toCheck)
+            {
+                if (next != null && !next.fulfills(toCheck)) return false;
+
+                string[] arguments;
+                char operation;
+
+                if ((arguments = this.toCheck.Split("<")).Length == 2)
+                    operation = '<';
+                else if ((arguments = this.toCheck.Split("=")).Length == 2)
+                    operation = '=';
+                else if ((arguments = this.toCheck.Split(">")).Length == 2)
+                    operation = '>';
+                else throw new InvalidOperationException();
+
+                if(operation == '>')
+                    return toCheck.gettersForUsers[arguments[0]]().CompareTo(arguments[1]) == 1;
+                if (operation == '<')
+                    return toCheck.gettersForUsers[arguments[0]]().CompareTo(arguments[1]) == -1;
+                return toCheck.gettersForUsers[arguments[0]]().CompareTo(arguments[1]) == 0;
+
+            }
+        }
+
+        protected string entity;
+        protected PredicateToAdd? pred = null;
         public CommandWithPredicateArgument(string userLine) : base(userLine)
         {
+            entity = arguments[0];
+            for(int i = 1; i < arguments.Length; i++)
+                pred = new PredicateToAdd(pred, arguments[i]);
+        }
+    }
+
+    public class FindCommand : CommandWithPredicateArgument
+    {
+        public FindCommand(string userLine) : base(userLine)
+        {
+
+        }
+
+        public override void Execute()
+        {
+            if (pred == null)
+            {
+                Algorithms.Print(App.nameToColectionDictionary[entity].GetIterator(), 
+                    new TruePredicate());
+                return;
+            }
+            Algorithms.Print(App.nameToColectionDictionary[entity].GetIterator(), pred);
         }
     }
 
