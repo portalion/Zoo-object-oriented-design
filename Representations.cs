@@ -4,7 +4,7 @@
     {
         string name { get; set; }
         IEnumerable<IAnimal> animals { get; }
-        IEmployee? employee { get; }
+        IEmployee? employee { get; set; }
         Dictionary<string, Action<string>> IEditableByUser.settersForUsers
         { 
             get
@@ -37,7 +37,7 @@
     {
         string name { get; set; }
         int age { get; set; }
-        ISpecies? species { get; }
+        ISpecies? species { get; set; }
         Dictionary<string, Action<string>> IEditableByUser.settersForUsers
         {
             get

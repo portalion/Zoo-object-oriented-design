@@ -13,7 +13,8 @@ namespace MainRepresentation
         }
         public IEmployee? employee 
         { 
-            get { return adaptee.employee == null ? null : new EmployeeAdapter(adaptee.employee); } 
+            get { return adaptee.employee == null ? null : new EmployeeAdapter(adaptee.employee); }
+            set { employee = value; }
         }
         public IEnumerable<IAnimal> animals
         {
@@ -33,6 +34,7 @@ namespace MainRepresentation
         public ISpecies? species 
         { 
             get { return adaptee.species == null ? null : new SpeciesAdapter(adaptee.species); } 
+            set { species = value; }
         }
     }
     public class SpeciesAdapter : ISpecies
@@ -125,6 +127,8 @@ namespace SecondRepresentation
                     else throw new KeyNotFoundException();
             } 
         }
+
+        IEmployee? IEnclosure.employee { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     }
     public class SpeciesAdapter : ISpecies
     {
@@ -182,6 +186,7 @@ namespace SecondRepresentation
 
         string IAnimal.name { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         int IAnimal.age { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        ISpecies? IAnimal.species { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     }
     public class EmployeeAdapter : IEmployee
     {
@@ -305,6 +310,7 @@ namespace ThirdRepresentation
             }
         }
 
+        IEmployee? IEnclosure.employee { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     }
     public class SpeciesAdapter : ISpecies
     {
@@ -376,6 +382,8 @@ namespace ThirdRepresentation
                 return new SpeciesAdapter(speciesDict[int.Parse(adaptee.data["species"])], speciesDict);
             }
         }
+
+        ISpecies? IAnimal.species { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     }
     public class EmployeeAdapter : IEmployee
     {

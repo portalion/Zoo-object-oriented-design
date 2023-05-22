@@ -4,28 +4,55 @@ namespace Zoo
 {
     public sealed class App
     {
-        public readonly ICollection enclosures = new DoubleLinkList();
-        public readonly ICollection animals = new Vector();
-        public readonly ICollection species  = new BinaryTree();
-        public readonly ICollection employees = new BinaryTree();
-        public readonly ICollection visitors = new DoubleLinkList();
+        public static readonly ICollection enclosures = new DoubleLinkList();
+        public static readonly ICollection animals = new Vector();
+        public static readonly ICollection species  = new BinaryTree();
+        public static readonly ICollection employees = new BinaryTree();
+        public static readonly ICollection visitors = new DoubleLinkList();
 
-        public void Init(Dictionary<string, IEnclosure> enclosures,
-            Dictionary<string, IAnimal> animals,
-            Dictionary<string, ISpecies> species,
-            Dictionary<string, IEmployee> employees,
-            Dictionary<string, IVisitor> visitors)
+        public static Dictionary<string, ICollection> nameToColectionDictionary =
+            new Dictionary<string, ICollection>();
+
+        public static Func<IEditableByUser> GetFunctionForCreatingObject(string entity, RepresentationFactory factory)
         {
-            foreach (var enclosure in enclosures.Values)
-                this.enclosures.Add(enclosure);
-            foreach (var animal in animals.Values)
-                this.animals.Add(animal);
-            foreach (var specie in species.Values)
-                this.species.Add(specie);
-            foreach (var employee in employees.Values)
-                this.employees.Add(employee);
-            foreach (var visitor in visitors.Values)
-                this.visitors.Add(visitor);
+            switch(entity)
+            {
+                case "animal":
+                    return factory.CreateAnimal;
+                case "employee":
+                    return factory.CreateEmployee;
+                case "visitor":
+                    return factory.CreateVisitor;
+                case "species":
+                    return factory.CreateSpecies;
+                case "enclosure":
+                    return factory.CreateEnclosure;
+            }
+            throw new ArgumentException();
+        }
+
+        public void Init(Dictionary<string, IEnclosure> enclosuresDict,
+            Dictionary<string, IAnimal> animalsDict,
+            Dictionary<string, ISpecies> speciesDict,
+            Dictionary<string, IEmployee> employeesDict,
+            Dictionary<string, IVisitor> visitorsDict)
+        {
+            foreach (var enclosure in enclosuresDict.Values)
+                enclosures.Add(enclosure);
+            foreach (var animal in animalsDict.Values)
+                animals.Add(animal);
+            foreach (var specie in speciesDict.Values)
+                species.Add(specie);
+            foreach (var employee in employeesDict.Values)
+                employees.Add(employee);
+            foreach (var visitor in visitorsDict.Values)
+                visitors.Add(visitor);
+
+            nameToColectionDictionary["enclosure"] = enclosures;
+            nameToColectionDictionary["animal"] = animals;
+            nameToColectionDictionary["visitor"] = visitors;
+            nameToColectionDictionary["employee"] = employees;
+            nameToColectionDictionary["species"] = species;
         }
         
         private App() { }

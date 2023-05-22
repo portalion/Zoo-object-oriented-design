@@ -41,17 +41,6 @@ namespace Zoo
         }
     }
 
-    public abstract class CommandWithFactory : Command
-    {
-        //protected IEditableFactory factory;
-        public CommandWithFactory(string userLine): base(userLine) 
-        {
-            var entity = arguments[0];
-            arguments = arguments.Skip(1).ToArray();
-           
-        }
-    }
-
     public abstract class CommandWithPredicateArgument : Command
     {
         public CommandWithPredicateArgument(string userLine) : base(userLine)
@@ -59,18 +48,21 @@ namespace Zoo
         }
     }
 
-    public class AddCommand : CommandWithFactory
+    public class AddCommand : Command
     {
+
         public AddCommand(string userLine) : base(userLine)
         {
-            if(arguments.Length < 1) throw new ArgumentException();
+            if(arguments.Length < 2) throw new ArgumentException();
         }
 
         public override void Execute()
         {
-           /* IEditableByUser result;
-            if (arguments[0] == "base") result = factory.CreateBaseRepresentation();
-            else result = factory.CreateThirdRepresentation();
+            IEditableByUser result;
+            if (arguments[1] == "base")
+                result = App.GetFunctionForCreatingObject(arguments[0],
+                    new FirstRepresentationFactory())();
+            else throw new NotImplementedException();
 
             Console.WriteLine($"Possible fields: [{String.Join(", ", result.settersForUsers.Keys)}]");
 
@@ -81,20 +73,26 @@ namespace Zoo
                 if (input == "EXIT") break;
                 if (input == "DONE")
                 {
-                    factory.GetCollection().Add(result);
+                    App.nameToColectionDictionary[arguments[0]].Add(result);
                     break;
                 }
-            }*/
+                var variable = input.Split('=');
+                if (variable.Length < 2) continue;
+                if (!result.settersForUsers.ContainsKey(variable[0])) continue;
+                result.settersForUsers[variable[0]](variable[1]);
+            }
         }
     }
 
-    public class ListCommand : CommandWithFactory
+    public class ListCommand : Command
     {
         public ListCommand(string userLine) : base(userLine) { }
 
         public override void Execute()
         {
-            //Algorithms.Print(factory.GetCollection().GetIterator(), new TruePredicate());
+            if (arguments.Length < 1) throw new ArgumentException();
+            Algorithms.Print(App.nameToColectionDictionary[arguments[0]]
+                .GetIterator(), new TruePredicate());
         }
     }
 

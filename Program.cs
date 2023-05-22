@@ -82,6 +82,12 @@ namespace Zoo
                 Console.WriteLine($"{field.Key}: {field.Value()}");
             Console.WriteLine();
         }
+
+        static void CreateObjectsFromData(RepresentationFactory factoryToUse)
+        {
+
+        }
+
         static void CreateMainRepresentationObjects()
         {
             Dictionary<string, MainRepresentation.Enclosure> enclosures = new Dictionary<string, MainRepresentation.Enclosure>();
