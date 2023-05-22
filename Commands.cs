@@ -111,6 +111,22 @@ namespace Zoo
         }
     }
 
+    public class DeleteCommand : CommandWithPredicateArgument
+    {
+        public DeleteCommand(string userLine) : base(userLine)
+        {
+        }
+
+        public override void Execute()
+        {
+            var dictionary = App.nameToColectionDictionary[entity];
+            if (pred == null) return;
+            if (Algorithms.CountIf(dictionary.GetIterator(), pred) > 1) return;
+
+            dictionary.Remove(Algorithms.Find(dictionary.GetIterator(), pred));
+        }
+    }
+
     public class AddCommand : Command
     {
 

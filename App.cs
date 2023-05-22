@@ -1,4 +1,5 @@
 ﻿using Collections;
+using ZooApp;
 
 namespace Zoo
 {
@@ -66,6 +67,8 @@ namespace Zoo
             return instance;
         }
 
+        CommandQueue commands = new CommandQueue();
+
         public bool running { get; set; }
         public void Start()
         {
@@ -75,22 +78,7 @@ namespace Zoo
                 var input = Console.ReadLine();
                 if (input == null) continue;
 
-                Command command;
-                try
-                {
-                    command = Command.GetCommand(input);
-                }
-                catch (ArgumentException)
-                {
-                    Console.WriteLine("Bad argument");
-                    continue;
-                }
-                catch(InvalidOperationException)
-                {
-                    Console.WriteLine("Bad command");
-                    continue;
-                }
-                command.Execute();
+                commands.AddCommand(input);
             }
         }
     }
