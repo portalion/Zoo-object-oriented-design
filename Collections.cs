@@ -11,6 +11,7 @@ namespace Collections
     {
         void Add(IEditableByUser toAdd);
         void Remove(Iterator toRemove);
+        void Remove(IEditableByUser? toRemove);
         Iterator GetIterator();
         Iterator GetReverseIterator();
     }
@@ -126,6 +127,11 @@ namespace Collections
         public void Remove(Iterator val)
         {
             IEditableByUser? toRemove = val.MoveNext();
+            Remove(toRemove);
+        }
+        public void Remove(IEditableByUser? val)
+        {
+            IEditableByUser? toRemove = val;
             if (toRemove == null) return;
             Node? actual = Head;
             if (actual == null) return;
@@ -203,6 +209,12 @@ namespace Collections
         public void Remove(Iterator iterator)
         {
             IEditableByUser? toDeleteEnclosure = iterator.MoveNext();
+            Remove(toDeleteEnclosure);
+        }
+
+        public void Remove(IEditableByUser? toRemove)
+        {
+            IEditableByUser? toDeleteEnclosure = toRemove;
             if (toDeleteEnclosure == null) return;
             int toDelete = 0;
             for (toDelete = 0; toDelete < size; toDelete++)
@@ -382,6 +394,13 @@ namespace Collections
         {
             if (root == null) return;
             IEditableByUser? value = iter.MoveNext();
+
+            Remove(value);
+        }
+        public void Remove(IEditableByUser? iter)
+        {
+            if (root == null) return;
+            IEditableByUser? value = iter;
 
             if (value == null) return;
 
